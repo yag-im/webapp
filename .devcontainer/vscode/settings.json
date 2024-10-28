@@ -1,0 +1,15 @@
+{
+    "window.title": "${dirty}yag${separator}${rootName}",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "files.eol": "\n",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true,
+        "source.organizeImports": true,
+        "source.sortMembers": true
+    },
+    "eslint.validate": [
+        "typescript"
+    ]
+}

@@ -1,0 +1,4 @@
+_extends: .github:settings.yml
+repository:
+  name: webapp
+  description: Web application (frontend)

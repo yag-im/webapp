@@ -1,0 +1,27 @@
+{
+    "name": "yag-webapp",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "runArgs": [
+        "--name=yag-webapp",
+        "--add-host=host.docker.internal:host-gateway",
+        "--env-file=${localWorkspaceFolder}/.devcontainer/.env"
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "eamodio.gitlens",
+                "jock.svg"
+            ]
+        }
+    },
+    "postCreateCommand": ".devcontainer/post-create.sh",
+    "appPort": [
+        "8086:80"
+    ],
+    "mounts": [
+        "source=${env:HOME}${env:USERPROFILE}/.ssh,target=/home/node/.ssh,type=bind"
+    ]
+}
