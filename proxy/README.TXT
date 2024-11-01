@@ -12,8 +12,9 @@ sessionsvc (:8084)
 appsvc (:8085)
 jukegoxsvc (:8083)
 
-When developing locally without other services running locally, update APP_URL in 
-/workspaces/webapp/src/common/common-utils.tsx.
+When developing locally without other services running, update APP_URL in:
+
+    /workspaces/webapp/src/common/common-utils.tsx.
 
 Usage:
 
