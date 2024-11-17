@@ -1,10 +1,11 @@
 import AccountSwitch from '@/account/switch';
 import { APP_TITLE } from '@/common/common-utils';
 import { NextLink } from '@/routing/next-link';
-import { Box, Divider, Grid, Typography } from '@mui/material';
+import { Box, Divider, Grid, IconButton, Typography } from '@mui/material';
 import Image from 'next/image';
 
 import Logo from '@/images/powered_by/yag.im-logo.svg';
+import { GitHub } from '@mui/icons-material';
 
 interface LogoImageProps {
   src: string;
@@ -38,6 +39,11 @@ export function Header() {
               display: { md: 'block', xs: "none" }
             }}
           >
+            <a href="https://github.com/yag-im" target="_blank" rel="noopener noreferrer">
+              <IconButton>
+                <GitHub />
+              </IconButton>
+            </a>
             <AccountSwitch />
           </Box>
         </Grid>
