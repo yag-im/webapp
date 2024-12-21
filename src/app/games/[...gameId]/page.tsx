@@ -5,6 +5,7 @@ import { GamePlayer } from '@/games/game-player';
 import { NextLink } from '@/routing/next-link';
 import { getMetadata } from '@/seo/seo-utils';
 import { ArrowBack } from '@mui/icons-material';
+import { notFound } from 'next/navigation';
 import { Box, Button, Card, CardContent, Grid, ImageList, ImageListItem, Paper, Stack, Typography } from '@mui/material';
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -18,7 +19,11 @@ type GamePageProps = {
 export async function generateMetadata({
   params: { gameId },
 }: GamePageProps): Promise<Metadata> {
+  // TODO: getGameDetails is called twice: once on game page once here
   const { gameDetails } = await getGameDetails(gameId[0]);
+  if (gameDetails == null) {
+    notFound();
+  }
   const cover_image_id = gameDetails.media_assets_localized?.cover.image_id ?? gameDetails.media_assets.cover.image_id;
 
   return getMetadata({
@@ -57,7 +62,11 @@ const RefLink = ({ url, alt, src, ref_id }: RefLinkProps) => {
 export default async function GamePage({
   params: { gameId },
 }: GamePageProps) {
+  // TODO: getGameDetails is called twice: once at generateMetadata() and once here
   const { gameDetails } = await getGameDetails(gameId[0]);
+  if (gameDetails == null) {
+    notFound();
+  }
   const screenshots = gameDetails.media_assets_localized?.screenshots.length ? gameDetails.media_assets_localized.screenshots : gameDetails.media_assets.screenshots;
   const cover_image_id = gameDetails.media_assets_localized?.cover.image_id ?? gameDetails.media_assets.cover.image_id;
 

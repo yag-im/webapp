@@ -10,7 +10,7 @@ Other devcontainers (for reference):
 
 sessionsvc (:8084)
 appsvc (:8085)
-jukegoxsvc (:8083)
+jukeboxsvc (:8083)
 
 When developing locally without other services running, update APP_URL in:
 
