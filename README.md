@@ -10,8 +10,7 @@ Create *webapp/proxy/.env* file:
 
     SERVER_NAME=localhost
     WEBAPP_URL=http://webapp.yag.dc:8086
-    YAGSVC_URL=http://yagsvc.yag.dc:8082
-    SIGSVC_URL=http://sigsvc.yag.dc:8081
+    WEBAPI_URL=http://webapi.yag.dc:8082
 
 and run a proxy server:
 
@@ -21,8 +20,7 @@ and run a proxy server:
 
 The following devcontainers should be up and running:
 
-    sigsvc
-    yagsvc
+    webapi
 
 Then simply open this project in any IDE that supports devcontainers (VSCode is recommended).
 

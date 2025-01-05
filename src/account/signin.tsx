@@ -81,25 +81,25 @@ export function SignInDialog(props: SignInDialogProps) {
             <DialogContent dividers>
                 <Stack spacing={2} margin={'16px'} >
                     <SignInListItem
-                        href={`/api/login/google?next_url=${nextUrl}`}
+                        href={`/auth/google?next_url=${nextUrl}`}
                         alt="google"
                         src={GoogleLogo}
                         text="Sign in with Google"
                     />
                     <SignInListItem
-                        href={`/api/login/discord?next_url=${nextUrl}`}
+                        href={`/auth/discord?next_url=${nextUrl}`}
                         alt="discord"
                         src={DiscordLogo}
                         text="Sign in with Discord"
                     />
                     <SignInListItem
-                        href={`/api/login/twitch?next_url=${nextUrl}`}
+                        href={`/auth/twitch?next_url=${nextUrl}`}
                         alt="twitch"
                         src={TwitchLogo}
                         text="Continue with Twitch"
                     />
                     <SignInListItem
-                        href={`/api/login/reddit?next_url=${nextUrl}`}
+                        href={`/auth/reddit?next_url=${nextUrl}`}
                         alt="reddit"
                         src={RedditLogo}
                         text="Continue with Reddit"

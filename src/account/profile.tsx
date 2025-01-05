@@ -177,7 +177,7 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
         <ListItem key='Sign out'>
           <ListItemButton
             component="a"
-            href="/api/auth/logout">
+            href="/auth/logout">
             <ListItemIcon>
               <Logout />
             </ListItemIcon>

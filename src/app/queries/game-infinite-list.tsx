@@ -25,7 +25,7 @@ export function gameInfiniteListQueryOptions({ keyword, orderBy }: { keyword: st
           'Content-Type': 'application/json'
         })
       };
-      // we need to supply cookie in a server-side fetch in order to populate current_user in yagsvc (to check kids mode)    
+      // we need to supply cookie in a server-side fetch in order to populate current_user in webapi (to check kids mode)    
       if (headers().has('cookie')) {
         requestOptions.headers.append('cookie', headers().get('cookie')!);
       }
