@@ -7,6 +7,7 @@ import { getQueryClient } from '@/query-client/query-client-utils';
 import { getMetadata } from '@/seo/seo-utils';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import type { Metadata, Viewport } from 'next';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = getMetadata({
   title: 'Games Catalog',
@@ -40,8 +41,10 @@ export default async function GamesPage({
       <Card withTitle>
         <CardTitle as="h1">Games Catalog</CardTitle>
         <CardContent>
-          <GameSearchForm />
-          <GameInfiniteList />
+          <Suspense>
+            <GameSearchForm />          
+            <GameInfiniteList />
+          </Suspense>
         </CardContent>
       </Card>
     </HydrationBoundary>
