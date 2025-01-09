@@ -1,9 +1,9 @@
-import { API_URL } from '@/common/common-utils';
-import { getQueryClient } from "@/query-client/query-client-utils";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { headers } from 'next/headers';
+'use client'
+
+import { useEffect, useState } from 'react';
 import ProfileDrawer from "./profile";
 import SignInWidget from "./signin";
+import { getUserProfile } from '@/games/game-player-helpers';
 
 export interface UserProfileProps {
   dob: string;
@@ -12,33 +12,34 @@ export interface UserProfileProps {
   tz: string;
 }
 
-export default async function AccountSwitch() {
-  const queryClient = getQueryClient();
-  const userProfile: UserProfileProps = await queryClient.fetchQuery({
-    queryKey: ['user'],
-    queryFn: async () => {
-      const fetchHeaders = new Headers();
-      if (headers().has('cookie')) {
-        fetchHeaders.append('cookie', headers().get('cookie')!);
-      }
-      const response = await fetch(`${API_URL}/accounts/user`, { headers: fetchHeaders });
-      if (!response.ok) {
-        return null;
-      }
-      const response_json = await response.json() as UserProfileProps;
-      return response_json;
-    },
-  });
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <div>
-        {userProfile ? (
-          <ProfileDrawer anchor="right" userProfile={userProfile} />
-        ) : (
-          <SignInWidget />
-        )}
+export default function AccountSwitch() {
+  const [userProfile, setUserProfile] = useState<UserProfileProps | null>(null);
+  const [error, setError] = useState(false);
 
-      </div>
-    </HydrationBoundary>
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const profile = await getUserProfile();
+        setUserProfile(profile);
+      } catch (error) {
+        setError(true);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  if (error) {
+    return <SignInWidget />;
+  }
+  return (
+    <div>
+      {userProfile ? (
+        <ProfileDrawer anchor="right" userProfile={userProfile} />
+      ) : (
+        <SignInWidget />
+      )}
+
+    </div>
   );
 }
