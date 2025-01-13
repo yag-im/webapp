@@ -11,6 +11,7 @@ import { getGameDetails } from "./game-details-query";
 import ExitGameDialog from "./game-exit";
 import { exitFullscreen, getUserProfile, hideCursor, isFullScreen, lockKeyboard, lockPointer, requestFullscreen, showDefaultCursor, showWaitCursor } from "./game-player-helpers";
 import ResumeGameDialog from "./game-resume";
+import SafariWarningDialog from "./safari-warning";
 
 
 type GameSession = {
@@ -38,6 +39,7 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
   const [showResumeGameDialog, setShowResumeGameDialog] = useState(false);
   const [showExitGameDialog, setShowExitGameDialog] = useState(false);
   const [showLoadingMsg, setShowLoadingMsg] = useState(false);
+  const [showSafariWarningDialog, setShowSafariWarningDialog] = useState(false);
 
   const videoElementRef = useRef<React.ElementRef<'video'>>(null);
   const gamePlayerContainerRef = useRef<React.ElementRef<'div'>>(null);
@@ -280,6 +282,12 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
   }
 
   const handlePlayButtonClick = async () => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isSafariBrowser = /^((?!chrome|android).)*safari/i.test(userAgent);
+    if (isSafariBrowser && gameDetails.app_reqs.ua.lock_pointer) {
+      setShowSafariWarningDialog(true);
+      return;
+    }
     await playGame();
   }
 
@@ -403,6 +411,15 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
             } else {
               console.error("[GamePlayer] invalid state: no active session");
             }
+          }} />}
+      
+      {showSafariWarningDialog &&
+        <SafariWarningDialog
+          disablePortal={isFullScreen()} // otherwise dialog is not visible in the fullscreen mode
+          onExit={function (): void {
+            // exit game
+            console.log("[GamePlayer] SafariWarningDialog: exit game");
+            setShowSafariWarningDialog(false);
           }} />}
     </div>
   );
