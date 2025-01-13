@@ -223,8 +223,7 @@ export default class ConsumerSession extends WebRTCSession {
         }
       });
     } else if (msg.ice) {
-      var candidate = new RTCIceCandidate(msg.ice);
-      if (candidate.candidate === "") { candidate = null; }
+      let candidate = msg.ice && msg.ice.candidate ? new RTCIceCandidate(msg.ice) : null;
       this._rtcPeerConnection.addIceCandidate(candidate).catch((ex) => {
         if (this._state !== SessionState.closed) {
           this.dispatchEvent(new ErrorEvent("error", {
