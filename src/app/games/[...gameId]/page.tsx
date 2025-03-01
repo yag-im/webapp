@@ -172,6 +172,13 @@ export default async function GamePage({
             src="/images/outbound-logos/questzone_ru.png"
             ref_id={gameDetails.refs.qz_id}
           />
+          {gameDetails.distro.format === 'exoscummvm' && (
+            <Box>
+              <a href="https://www.retro-exo.com/scummvm.html" target="_blank">
+                <Image alt="eXoScummVM" src="/images/outbound-logos/exodos.ico" width={24} height={24} />
+              </a>
+            </Box>
+          )}
         </Stack>
       </Grid>
       <Grid item xs={12} sm={12} md={9}>

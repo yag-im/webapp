@@ -27,6 +27,11 @@ export type GameReleaseDetailsProps = {
     publisher: boolean;
     supporting: boolean;
   }[];
+  distro: {
+    files: string[];
+    format: string;
+    url: string;
+  };
   esrb_rating?: number;
   igdb: {
     id: number;
