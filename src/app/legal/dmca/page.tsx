@@ -33,7 +33,7 @@ const PrivacyPolicy = () => {
                 </Typography>
 
                 <Typography paragraph>
-                    You may send an email to: yag-dmca [at] acme [dot] im for all DMCA / Removal Requests.
+                    You may send an email to: dmca-removal [at] yag [dot] im for all DMCA / Removal Requests.
                 </Typography>
 
                 <Typography paragraph>

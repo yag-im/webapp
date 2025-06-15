@@ -79,7 +79,7 @@ const PrivacyPolicy = () => {
           Contact Us
         </Typography>
         <Typography paragraph>
-          If you have any questions about this Privacy Policy or our practices, you may contact us at yag-privacy [at] acme [dot] im.
+          If you have any questions about this Privacy Policy or our practices, you may contact us at privacy [at] yag [dot] im.
         </Typography>
 
         <Typography variant="h6" gutterBottom>Thank you for visiting yag.im and trusting us with your privacy.</Typography>

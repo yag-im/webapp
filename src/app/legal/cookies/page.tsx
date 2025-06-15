@@ -34,7 +34,7 @@ const PrivacyPolicy = () => {
 
         <Typography paragraph>If you are using our Services via an application, the operating system for your device provides instructions on how to prevent tailored advertising and how to reset your device’s advertising identifier.</Typography>
 
-        <Typography paragraph>If you would like to contact us about cookies please email us at yag-cookies [at] acme [dot] im.</Typography>
+        <Typography paragraph>If you would like to contact us about cookies please email us at cookies [at] yag [dot] im.</Typography>
       </Paper>
     </Container>
   );
