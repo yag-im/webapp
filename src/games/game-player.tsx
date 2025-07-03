@@ -79,12 +79,21 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
         console.error('[GamePlayer] error while playing after pause:', error);
       });
     });
+
     // Lock pointer (for certain games, mostly Win9x on dosbox-x)
-    // Should be called before switching to the fullscreen: 
+    // In Firefox pointer lock could be requested only on the explicit element click
+    videoElementRef.current?.addEventListener('click', (e) => {      
+      if (gameDetails.app_reqs.ua.lock_pointer && !document.pointerLockElement) {        
+        lockPointer(videoElementRef.current);
+      }
+    });
+    // In Google Chrome, lock pointer can be requested without explicit clicks, 
+    // but it should be called before switching to the fullscreen: 
     // https://developer.mozilla.org/en-US/docs/Web/API/Element/requestPointerLock
-    if (gameDetails.app_reqs.ua.lock_pointer) {
+    if (gameDetails.app_reqs.ua.lock_pointer && !document.pointerLockElement) {
       lockPointer(videoElementRef.current);
     }
+   
     requestFullscreen(gamePlayerContainerRef.current, () => {
       // on exit fullscreen cb handler
       showDefaultCursor();

@@ -49,7 +49,10 @@ export function requestPointerLockWithoutUnadjustedMovement(target_el: any) {
     const promise = target_el.requestPointerLock({
         unadjustedMovement: false
     });
-    if (!promise) return;
+    if (!promise) {
+        console.warn("[GamePlayer] mouse lock is not supported?");
+        return;
+    }
     return promise
         .then(() => { 
             console.log("[GamePlayer] pointer is locked without unadjusted movement");
@@ -66,8 +69,8 @@ export function requestPointerLockWithUnadjustedMovement(target_el: any) {
         unadjustedMovement: true
     });
     if (!promise) {
-        console.warn("[GamePlayer] disabling mouse acceleration not supported");
-        return;
+        console.warn("[GamePlayer] disabling mouse acceleration is not supported? Trying to lock without unadjusted movement");
+        return requestPointerLockWithoutUnadjustedMovement(target_el);
     }
     return promise
         .then(() => {
