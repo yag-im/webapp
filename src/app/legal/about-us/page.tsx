@@ -1,6 +1,6 @@
 import { Container, List, Paper, Typography } from '@mui/material';
 
-const PrivacyPolicy = () => {
+const AboutUs = () => {
   return (
     <Container component="main" maxWidth="md" style={{ marginTop: '2rem' }}>
       <Paper elevation={3} style={{ padding: '2rem' }}>
@@ -60,4 +60,4 @@ const PrivacyPolicy = () => {
   );
 };
 
-export default PrivacyPolicy;
+export default AboutUs;

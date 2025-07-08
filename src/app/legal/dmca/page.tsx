@@ -1,40 +1,36 @@
 import { Container, List, ListItem, Paper, Typography, } from '@mui/material';
 
-const PrivacyPolicy = () => {
+const DmcaPolicy = () => {
     return (
         <Container component="main" maxWidth="md" style={{ marginTop: '2rem' }}>
             <Paper elevation={3} style={{ padding: '2rem' }}>
                 <Typography variant="h4" gutterBottom>
-                    DMCA / Removal request
+                    DMCA Notice and Takedown Policy
                 </Typography>
 
                 <Typography paragraph>
-                    yag.im respects the intellectual property rights and other proprietary rights of others.
+                    yag.im respects the intellectual property rights of others and complies with the provisions of the Digital Millennium Copyright Act (DMCA). If you believe your copyrighted work has been used or posted on our site in a way that constitutes copyright infringement, please notify our Designated Agent as specified below.
                 </Typography>
 
                 <Typography paragraph>
-                    Be sure the game you are asking to be removed actually contains the copyrighted content you are inquiring about.
+                    dmca-removal [at] yag [dot] im
                 </Typography>
 
                 <Typography paragraph>
-                    yag.im does implement game pages that act as informational pages for promotional purposes only. Play a game, inspect it, and if it is indeed your copyrighted work, contact us. To send a claim, include the following information:
+                    Be sure the work you are asking to be removed actually contains the copyrighted content you are inquiring about.
+                </Typography>
+
+                <Typography paragraph>
+                    yag.im does implement game pages that act as informational pages for promotional purposes only. Inspect the page, and if it is indeed your copyrighted work, contact us. To send a claim, include the following information:
                 </Typography>
                 <List>
-                    <ListItem>Identification of the copyrighted work whose copyright you claim has been infringed.</ListItem>
+                    <ListItem>A physical or electronic signature of the copyright owner or person authorized to act on their behalf.</ListItem>
+                    <ListItem>Identification of the copyrighted work claimed to have been infringed.</ListItem>
                     <ListItem>An exact description of where the material in question is located within yag.im.</ListItem>
-                    <ListItem>Your address, telephone number and email address.</ListItem>
-                    <ListItem>A statement by you that you have a good-faith belief that the disputed use is not authorized by the copyright owner, its agent, or the law.</ListItem>
-                    <ListItem>A statement by you, made under penalty of perjury, that the above information in your notice is accurate and that you are the owner of the copyright interest involved or are authorized to act on behalf of that owner.</ListItem>
-                    <ListItem>Your electronic or physical signature.</ListItem>
+                    <ListItem>Your contact information, including address, telephone number, and email address.</ListItem>
+                    <ListItem>A statement that you have a good faith belief that use of the material is not authorized by the copyright owner, its agent, or the law.</ListItem>
+                    <ListItem>A statement that the information in the notification is accurate, and under penalty of perjury, that you are the copyright owner or authorized to act on their behalf.</ListItem>
                 </List>
-
-                <Typography paragraph>
-
-                </Typography>
-
-                <Typography paragraph>
-                    You may send an email to: dmca-removal [at] yag [dot] im for all DMCA / Removal Requests.
-                </Typography>
 
                 <Typography paragraph>
                     Please note that if applicable under Section 512(f) of the DMCA any person who knowingly materially misrepresents that material or activity is infringing may be subject to liability for damages. Please take this seriously!
@@ -45,4 +41,4 @@ const PrivacyPolicy = () => {
     );
 };
 
-export default PrivacyPolicy;
+export default DmcaPolicy;

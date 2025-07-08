@@ -54,7 +54,7 @@ export function Footer() {
               Privacy Policy
             </NextLink>
             <NextLink href="/legal/dmca">
-              DMCA
+              DMCA Policy
             </NextLink>
             <NextLink href="/legal/cookies">
               Cookies
