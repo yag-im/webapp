@@ -98,6 +98,8 @@ export default class RemoteController extends EventTarget {
     this._videoElementKeyboard = null;
     this._lastTouchEventTimestamp = 0;
 
+    this._escKeyDownSent = false;
+
     rtcDataChannel.addEventListener("close", () => {
       if (this._rtcDataChannel === rtcDataChannel) {
         this.close();
@@ -354,6 +356,15 @@ export default class RemoteController extends EventTarget {
       event.preventDefault();
       event.stopPropagation();
       {
+        // Only send one keydown event for ESC key to avoid interfering with "Long ESC press - exit the fullscreen mode"
+        if (event.key === "Escape" && event.type === "keydown") {          
+          if (this._escKeyDownSent) {
+            return;
+          }
+          this._escKeyDownSent = true;
+        } else {
+          this._escKeyDownSent = false;
+        }
         const data = {
           event: keyboardEventsNames[event.type],
           key: getKeysymString(event.key, event.code),
