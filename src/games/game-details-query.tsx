@@ -22,6 +22,7 @@ export async function getGameDetails(appReleaseUuid: string) {
       const response_json = await response.json() as GameReleaseDetailsProps;
       return response_json;
     },
+    staleTime: 0
   });
   return { gameDetails };
 }
