@@ -5,10 +5,42 @@ import { GamePlayer } from '@/games/game-player';
 import { NextLink } from '@/routing/next-link';
 import { getMetadata } from '@/seo/seo-utils';
 import { ArrowBack } from '@mui/icons-material';
-import { notFound } from 'next/navigation';
 import { Box, Button, Card, CardContent, Grid, ImageList, ImageListItem, Paper, Stack, Typography } from '@mui/material';
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
+
+const feedbackCardContents = [
+  {
+    title: 'Share feedback',
+    description: 'We would love to know more <br /> about your gaming experience <br /> with us.',
+    button: {
+      text: 'Open Discord Channel',
+      href: 'https://discord.gg/N4QavHBBAG',
+    },
+  },
+  {
+    title: 'Request a new game',
+    description: 'Desperately searching for your <br /> favorite childhood game? <br /> Let us know and we’ll add it!',
+    button: {
+      text: 'Open Discord Channel',
+      href: 'https://discord.gg/N4QavHBBAG',
+    },
+  },
+  {
+    title: 'Report an issue',
+    description: 'Found an issue with a game? <br /> Let us know — we’ll get it fixed!',
+    button: {
+      text: 'Open Discord Channel',
+      href: 'https://discord.gg/N4QavHBBAG',
+    },
+  },
+];
+
+function getRandomFeedbackCardContent() {
+  const idx = Math.floor(Math.random() * feedbackCardContents.length);
+  return feedbackCardContents[idx];
+}
 
 type GamePageProps = {
   params: {
@@ -62,6 +94,7 @@ const RefLink = ({ url, alt, src, ref_id }: RefLinkProps) => {
 export default async function GamePage({
   params: { gameId },
 }: GamePageProps) {
+  const feedbackCardContent = getRandomFeedbackCardContent();
   // TODO: getGameDetails is called twice: once at generateMetadata() and once here
   const { gameDetails } = await getGameDetails(gameId[0]);
   if (gameDetails == null) {
@@ -234,13 +267,13 @@ export default async function GamePage({
               alignItems: 'center',
             }}
           >
-            <Typography gutterBottom variant='h6'>Share feedback</Typography>
-            <Typography paragraph align='center'>We would love to know more <br /> about your gaming experience <br /> with us.</Typography>
+            <Typography gutterBottom variant='h6'>{feedbackCardContent.title}</Typography>
+            <Typography paragraph align='center' dangerouslySetInnerHTML={{ __html: feedbackCardContent.description }} />
             <Button
-              href='https://discord.gg/N4QavHBBAG'
+              href={feedbackCardContent.button.href}
               target='_blank'
               variant='outlined'
-            >Open Discord Channel</Button>
+            >{feedbackCardContent.button.text}</Button>
           </CardContent>
         </Card>
       </Grid>
