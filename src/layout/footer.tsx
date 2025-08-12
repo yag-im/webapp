@@ -3,6 +3,7 @@ import poweredByDosBoxXLogo from '@/images/powered_by/dosbox-x-logo.svg';
 import poweredByIgdbLogo from '@/images/powered_by/IGDB_logo.svg';
 import poweredByScummVmLogo from '@/images/powered_by/ScummVM-logo.svg';
 import poweredByWineLogo from '@/images/powered_by/WINE-logo.svg';
+import poweredByRetroArchLogo from '@/images/powered_by/RetroArch-logo.svg';
 import { NextLink } from '@/routing/next-link';
 import { Divider, Grid, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
@@ -89,6 +90,9 @@ export function Footer() {
             </a>
             <a href="https://www.winehq.org/" className="mx-4">
               <PoweredByImage src={poweredByWineLogo} alt="WineHQ" />
+            </a>
+            <a href="https://www.retroarch.com/" className="mx-4">
+              <PoweredByImage src={poweredByRetroArchLogo} alt="RetroArch" />
             </a>
           </Stack>
         </Grid>
