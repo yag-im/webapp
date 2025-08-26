@@ -1,9 +1,10 @@
 import poweredByDosBoxLogo from '@/images/powered_by/dosbox-logo.svg';
 import poweredByDosBoxXLogo from '@/images/powered_by/dosbox-x-logo.svg';
-import poweredByIgdbLogo from '@/images/powered_by/IGDB_logo.svg';
+import poweredByIgdbLogo from '@/images/powered_by/IGDB-logo.svg';
 import poweredByScummVmLogo from '@/images/powered_by/ScummVM-logo.svg';
 import poweredByWineLogo from '@/images/powered_by/WINE-logo.svg';
 import poweredByRetroArchLogo from '@/images/powered_by/RetroArch-logo.svg';
+import poweredByQuemuLogo from '@/images/powered_by/QEMU-logo.svg';
 import { NextLink } from '@/routing/next-link';
 import { Divider, Grid, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
@@ -93,6 +94,9 @@ export function Footer() {
             </a>
             <a href="https://www.retroarch.com/" className="mx-4">
               <PoweredByImage src={poweredByRetroArchLogo} alt="RetroArch" />
+            </a>
+            <a href="https://www.qemu.org/" className="mx-4">
+              <PoweredByImage src={poweredByQuemuLogo} alt="QEMU" />
             </a>
           </Stack>
         </Grid>
