@@ -214,6 +214,7 @@ export default class RemoteController extends EventTarget {
         throw new Error("remote controller data channel is closed");
       }
 
+      //console.log("Sending GstNavigation event: ", data);
       this._rtcDataChannel.send(JSON.stringify(data));
     } catch (ex) {
       this.dispatchEvent(new ErrorEvent("error", {
@@ -282,134 +283,133 @@ export default class RemoteController extends EventTarget {
     }
 
     switch (event.type) {
-    case "wheel":
-      event.preventDefault();
-      {
-        const mousePos = this._computeVideoMousePosition(event);
-        this._sendGstNavigationEvent({
-          event: "MouseScroll",
-          x: mousePos.x,
-          y: mousePos.y,
-          delta_x: -event.deltaX, // eslint-disable-line camelcase
-          delta_y: -event.deltaY, // eslint-disable-line camelcase
-          modifier_state: getModifiers(event) // eslint-disable-line camelcase
-        });
-      }
-      break;
-
-    case "contextmenu":
-      event.preventDefault();
-      break;
-
-    case "mousemove":
-    case "mousedown":
-    case "mouseup":
-      event.preventDefault();
-      {
-        const mousePos = this._computeVideoMousePosition(event);
-        const data = {
-          event: mouseEventsNames[event.type],
-          x: mousePos.x,
-          y: mousePos.y,
-          modifier_state: getModifiers(event) // eslint-disable-line camelcase
-        };
-
-        if (event.type !== "mousemove") {
-          data.button = event.button + 1;
+      case "wheel":
+        event.preventDefault();
+        {
+          const mousePos = this._computeVideoMousePosition(event);
+          this._sendGstNavigationEvent({
+            event: "MouseScroll",
+            x: mousePos.x,
+            y: mousePos.y,
+            delta_x: -event.deltaX, // eslint-disable-line camelcase
+            delta_y: -event.deltaY, // eslint-disable-line camelcase
+            modifier_state: getModifiers(event) // eslint-disable-line camelcase
+          });
         }
+        break;
 
-        this._sendGstNavigationEvent(data);
-      }
-      break;
+      case "contextmenu":
+        event.preventDefault();
+        break;
 
-    case "touchstart":
-    case "touchend":
-    case "touchmove":
-    case "touchcancel":
-      for (const touch of event.changedTouches) {
-        const mousePos = this._computeVideoMousePosition(touch);
-        const data = {
-          event: touchEventsNames[event.type],
-          identifier: touch.identifier,
-          x: mousePos.x,
-          y: mousePos.y,
-          modifier_state: getModifiers(event) // eslint-disable-line camelcase
-        };
+      case "mousemove":
+      case "mousedown":
+      case "mouseup":
+        event.preventDefault();
+        {
+          const mousePos = this._computeVideoMousePosition(event);
+          const data = {
+            event: mouseEventsNames[event.type],
+            x: mousePos.x,
+            y: mousePos.y,
+            modifier_state: getModifiers(event) // eslint-disable-line camelcase
+          };
 
-        if (("force" in touch) && ((event.type === "touchstart") || (event.type === "touchmove"))) {
-          data.pressure = touch.force;
-        }
-
-        this._sendGstNavigationEvent(data);
-      }
-
-      if (event.timeStamp > this._lastTouchEventTimestamp) {
-        this._lastTouchEventTimestamp = event.timeStamp;
-        this._sendGstNavigationEvent({
-          event: "TouchFrame",
-          modifier_state: getModifiers(event) // eslint-disable-line camelcase
-        });
-      }
-      break;
-    case "keyup":
-      event.preventDefault();
-      event.stopPropagation();
-      {
-        if (event.key === "Escape") {
-          // Reset flag, but don't send anything
-          this._escKeyDownSent = false;
-          return;
-        }
-
-        const data = {
-          event: keyboardEventsNames[event.type],
-          key: getKeysymString(event.key, event.code),
-          modifier_state: getModifiers(event)
-        };
-        this._sendGstNavigationEvent(data);
-      }
-      break;
-    case "keydown":
-      event.preventDefault();
-      event.stopPropagation();
-      {
-        if (event.key === "Escape") {
-          if (this._escKeyDownSent) {
-            // Already handled Esc press, ignore repeats
-            return;
+          if (event.type !== "mousemove") {
+            data.button = event.button + 1;
           }
-          this._escKeyDownSent = true;
 
-          // Send both keydown and immediate keyup
-          const downData = {
-            event: keyboardEventsNames["keydown"],
-            key: getKeysymString(event.key, event.code),
-            modifier_state: getModifiers(event)
+          this._sendGstNavigationEvent(data);
+        }
+        break;
+
+      case "touchstart":
+      case "touchend":
+      case "touchmove":
+      case "touchcancel":
+        for (const touch of event.changedTouches) {
+          const mousePos = this._computeVideoMousePosition(touch);
+          const data = {
+            event: touchEventsNames[event.type],
+            identifier: touch.identifier,
+            x: mousePos.x,
+            y: mousePos.y,
+            modifier_state: getModifiers(event) // eslint-disable-line camelcase
           };
-          this._sendGstNavigationEvent(downData);
 
-          const upData = {
-            event: keyboardEventsNames["keyup"],
-            key: getKeysymString(event.key, event.code),
-            modifier_state: getModifiers(event)
-          };
-          this._sendGstNavigationEvent(upData);
+          if (("force" in touch) && ((event.type === "touchstart") || (event.type === "touchmove"))) {
+            data.pressure = touch.force;
+          }
 
-          return;
-        } else {
-          // reset flag for other keys
-          this._escKeyDownSent = false;
+          this._sendGstNavigationEvent(data);
         }
 
-        // Normal handling for other keys
-        const data = {
-          event: keyboardEventsNames[event.type],
-          key: getKeysymString(event.key, event.code),
-          modifier_state: getModifiers(event)
-        };
-        this._sendGstNavigationEvent(data);
-      }
-      break;
+        if (event.timeStamp > this._lastTouchEventTimestamp) {
+          this._lastTouchEventTimestamp = event.timeStamp;
+          this._sendGstNavigationEvent({
+            event: "TouchFrame",
+            modifier_state: getModifiers(event) // eslint-disable-line camelcase
+          });
+        }
+        break;
+      case "keyup":
+        event.preventDefault();
+        event.stopPropagation();
+        {
+          if (event.key === "Escape") {
+            // Reset flag, but don't send anything
+            this._escKeyDownSent = false;
+            break;
+          }
+          const data = {
+            event: keyboardEventsNames[event.type],
+            key: getKeysymString(event.key, event.code),
+            modifier_state: getModifiers(event)
+          };
+          this._sendGstNavigationEvent(data);
+        }
+        break;
+      case "keydown":
+        event.preventDefault();
+        event.stopPropagation();
+        {
+          if (event.key === "Escape") {
+            if (this._escKeyDownSent) {
+              // Already handled Esc press, ignore repeats
+              break;
+            }
+            // Send both keydown and immediate keyup
+            const downData = {
+              event: keyboardEventsNames["keydown"],
+              key: getKeysymString(event.key, event.code),
+              modifier_state: getModifiers(event)
+            };
+            this._sendGstNavigationEvent(downData);
+            this._escKeyDownSent = true;
+            const upData = {
+              event: keyboardEventsNames["keyup"],
+              key: getKeysymString(event.key, event.code),
+              modifier_state: getModifiers(event)
+            };
+            setTimeout(() => {
+              this._sendGstNavigationEvent(upData);
+            }, 100); // without delay Esc Up event will be ignored on the server somehow...
+
+            break;
+          } else {
+            // reset flag for other keys
+            this._escKeyDownSent = false;
+          }
+
+          // Normal handling for other keys
+          const data = {
+            event: keyboardEventsNames[event.type],
+            key: getKeysymString(event.key, event.code),
+            modifier_state: getModifiers(event)
+          };
+          this._sendGstNavigationEvent(data);
+        }
+        break;
     }
   }
 }
