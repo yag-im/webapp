@@ -352,23 +352,60 @@ export default class RemoteController extends EventTarget {
       }
       break;
     case "keyup":
+      event.preventDefault();
+      event.stopPropagation();
+      {
+        if (event.key === "Escape") {
+          // Reset flag, but don't send anything
+          this._escKeyDownSent = false;
+          return;
+        }
+
+        const data = {
+          event: keyboardEventsNames[event.type],
+          key: getKeysymString(event.key, event.code),
+          modifier_state: getModifiers(event)
+        };
+        this._sendGstNavigationEvent(data);
+      }
+      break;
     case "keydown":
       event.preventDefault();
       event.stopPropagation();
       {
-        // Only send one keydown event for ESC key to avoid interfering with "Long ESC press - exit the fullscreen mode"
-        if (event.key === "Escape" && event.type === "keydown") {          
+        if (event.key === "Escape") {
           if (this._escKeyDownSent) {
+            // Already handled Esc press, ignore repeats
             return;
           }
           this._escKeyDownSent = true;
+
+          // Send both keydown and immediate keyup
+          const downData = {
+            event: keyboardEventsNames["keydown"],
+            key: getKeysymString(event.key, event.code),
+            modifier_state: getModifiers(event)
+          };
+          this._sendGstNavigationEvent(downData);
+
+          const upData = {
+            event: keyboardEventsNames["keyup"],
+            key: getKeysymString(event.key, event.code),
+            modifier_state: getModifiers(event)
+          };
+          this._sendGstNavigationEvent(upData);
+
+          return;
         } else {
+          // reset flag for other keys
           this._escKeyDownSent = false;
         }
+
+        // Normal handling for other keys
         const data = {
           event: keyboardEventsNames[event.type],
           key: getKeysymString(event.key, event.code),
-          modifier_state: getModifiers(event) // eslint-disable-line camelcase
+          modifier_state: getModifiers(event)
         };
         this._sendGstNavigationEvent(data);
       }
