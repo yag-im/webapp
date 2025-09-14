@@ -378,7 +378,8 @@ export default class RemoteController extends EventTarget {
               // Already handled Esc press, ignore repeats
               break;
             }
-            // Send both keydown and immediate keyup
+            // Send both keydown and immediate keyup for Esc
+            // Otherwise long Esc press (e.g. to exit the full screen) causes minor glitches in many games
             const downData = {
               event: keyboardEventsNames["keydown"],
               key: getKeysymString(event.key, event.code),
@@ -393,7 +394,7 @@ export default class RemoteController extends EventTarget {
             };
             setTimeout(() => {
               this._sendGstNavigationEvent(upData);
-            }, 100); // without delay Esc Up event will be ignored on the server somehow...
+            }, 100); // without the delay Esc keyup event will be ignored on the server somehow...
 
             break;
           } else {

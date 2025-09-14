@@ -20,6 +20,8 @@ export type GameReleaseCardProps = {
   name: string;
   slug: string;
   year_released: number;
+  platform: string;
+  distro_format: string;
 };
 
 const LimitedCardTitle = styled(Typography)`
@@ -74,7 +76,8 @@ export function GameReleaseCard(game: GameReleaseCardProps) {
               {game.name}
             </LimitedCardTitle>
               <Typography variant="body2" color="text.secondary">
-                {game.year_released} • {game.lang}
+                {game.year_released} • {game.lang} • {game.platform}
+                {game.distro_format !== "changeme" && ` • ${game.distro_format}`}
               </Typography>
             </Box>
           </CardContent>

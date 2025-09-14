@@ -97,10 +97,16 @@ export function GameDetails(gameDetails: GameReleaseDetailsProps) {
   const gameDetailsList = [
     { key: "Publisher", value: gameDetails.companies.find(company => company.publisher)?.name || <Typography>{detailsValueFallbackText}</Typography> },
     { key: "Year released", value: gameDetails.year_released },
-    { key: "Platform", value: gameDetails.platform.name },
+    { key: "Media", value: gameDetails.distro.format },
     { key: "Language", value: gameDetails.lang },
-    { key: "ESRB rating", value: getEsrbDisplay(gameDetails.esrb_rating) || <Typography>{detailsValueFallbackText}</Typography> }
+    { key: "Platform", value: gameDetails.platform.slug },
+    { key: "Runner", value: gameDetails.runner.name }
   ];
+
+  const esrbDisplay = getEsrbDisplay(gameDetails.esrb_rating);
+  if (esrbDisplay) {
+    gameDetailsList.push({ key: "ESRB rating", value: esrbDisplay });
+  }
 
   return (
     <Grid container spacing={2}>
