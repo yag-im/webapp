@@ -5,8 +5,9 @@ import poweredByScummVmLogo from '@/images/powered_by/ScummVM-logo.svg';
 import poweredByWineLogo from '@/images/powered_by/WINE-logo.svg';
 import poweredByRetroArchLogo from '@/images/powered_by/RetroArch-logo.svg';
 import poweredByQuemuLogo from '@/images/powered_by/QEMU-logo.svg';
+import buyMeACoffeeQr from '@/images/bmc_qr.png';
 import { NextLink } from '@/routing/next-link';
-import { Divider, Grid, Stack, Typography } from '@mui/material';
+import { Box, Divider, Grid, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 
 interface PoweredByImageProps {
@@ -42,6 +43,45 @@ export function Footer() {
         rowGap={4}
         padding={2}
       >
+        {/* --- Support section --- */}
+        <Grid item xs={12}>
+          <Box
+            display="flex"
+            flexDirection={{ xs: 'column', sm: 'row' }}
+            alignItems="center"
+            justifyContent="center"
+            textAlign={{ xs: 'center', sm: 'left' }}
+            gap={3}
+            marginTop={6}
+          >
+            <a
+              href="https://www.buymeacoffee.com/yagim"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                src={buyMeACoffeeQr}
+                alt="Buy Me a Coffee QR Code"
+                width={128}
+                height={128}
+                style={{ borderRadius: '8px', cursor: 'pointer', transition: 'transform 0.2s' }}
+                className="hover:scale-105"
+              />
+            </a>
+
+            <Box maxWidth={420}>
+              <Typography variant="h6" fontWeight="bold" gutterBottom>
+                Support the project
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Enjoy classic adventure games completely free on <strong>yag.im</strong>!
+                Support us to keep these ad-free, timeless experiences open for everyone.
+                Join the mission today!
+              </Typography>
+            </Box>
+          </Box>
+        </Grid>
+        {/* --- Legal Links --- */}
         <Grid item xs={12}>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
@@ -64,6 +104,7 @@ export function Footer() {
           </Stack>
         </Grid>
 
+        {/* --- Powered By Logos --- */}
         <Grid item xs={12}>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
