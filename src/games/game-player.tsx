@@ -340,7 +340,7 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
             zIndex: 20,
           }}
         >
-          <Typography variant='h2' style={{ color: 'white' }}>Loading, please wait...</Typography>
+          <Typography variant='h2' style={{ color: 'white' }}>Connecting. Please wait...</Typography>
         </Box>
       )}
       {showPlayButton && (
