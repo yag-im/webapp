@@ -30,3 +30,19 @@ video::-webkit-media-controls-enclosure {
 .hover-image:hover {
     filter: grayscale(0%);
 }
+
+/* minimal skeleton shimmer used for image loading placeholder */
+.skeleton-wave {
+    background: linear-gradient(90deg, #efefef 0%, #ededed 50%, #efefef 100%);
+    background-size: 200% 100%;
+    animation: skeleton-wave 1.2s linear infinite;
+}
+
+@keyframes skeleton-wave {
+    from {
+        background-position: 200% 0;
+    }
+    to {
+        background-position: -200% 0;
+    }
+}
