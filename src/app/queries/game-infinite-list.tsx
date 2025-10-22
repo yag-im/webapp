@@ -7,17 +7,19 @@ const FIRST_PAGE = 0;
 const LIMIT_PAGE = 25;
 
 // https://tanstack.com/query/v5/docs/react/typescript#typing-query-options
-export function gameInfiniteListQueryOptions({ keyword, orderBy }: { keyword: string | null, orderBy: OrderBy | null }) {
+export function gameInfiniteListQueryOptions({ keyword, orderBy, publisher }: { keyword: string | null, orderBy: OrderBy | null, publisher?: string | null }) {
   return infiniteQueryOptions({
     initialPageParam: FIRST_PAGE,
-    queryKey: ['games', { keyword, orderBy }],
+    queryKey: ['games', keyword || '', orderBy || '', publisher || ''],
     queryFn: async ({ pageParam }) => {
-      const data = {
+      const data: any = {
         offset: pageParam * LIMIT_PAGE,
-        ...(keyword ? { app_name: keyword } : {}),
         limit: LIMIT_PAGE,
         ...(orderBy ? { order_by: orderBy } : {}),
       };
+
+      if (keyword) data.app_name = keyword;
+      if (publisher) data.publisher_name = publisher;
       const requestOptions = {
         method: 'POST',
         body: JSON.stringify({ ...data }),

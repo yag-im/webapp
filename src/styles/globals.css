@@ -42,6 +42,7 @@ video::-webkit-media-controls-enclosure {
     from {
         background-position: 200% 0;
     }
+
     to {
         background-position: -200% 0;
     }

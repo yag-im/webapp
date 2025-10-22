@@ -18,17 +18,26 @@ export function GameSearchForm() {
   const handleSearchChange = (event: { target: { value: string; }; }) => {
     const keyword = event.target.value;
     if (keyword.length >= MIN_CHARS_SEARCH || keyword.length === 0) {
-      router.push(
-        createUrl('/games', new URLSearchParams({ keyword, orderBy })),
-      );
+      const params = typeof window !== 'undefined'
+        ? new URLSearchParams(window.location.search)
+        : new URLSearchParams(Array.from(searchParams.entries()));
+      params.set('keyword', keyword);
+      // ensure publisher (if present) is preserved
+      const pub = searchParams.get('publisher');
+      if (pub) params.set('publisher', pub);
+      router.push(createUrl('/games', params));
     }
   };
 
   const handleSortByChange = (event: { target: { value: string; }; }) => {
     const orderBy = event.target.value;
-    router.push(
-      createUrl('/games', new URLSearchParams({ keyword, orderBy })),
-    );
+    const params = typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search)
+      : new URLSearchParams(Array.from(searchParams.entries()));
+    params.set('orderBy', orderBy);
+    const pub = searchParams.get('publisher');
+    if (pub) params.set('publisher', pub);
+    router.push(createUrl('/games', params));
   };
 
   return (

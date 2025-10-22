@@ -12,9 +12,10 @@ import type { OrderBy } from './types';
 export function GameInfiniteList() {
   const searchParams = useSearchParams();
   const keyword = searchParams.get('keyword');
+  const publisher = searchParams.get('publisher');
   const orderBy = searchParams.get('orderBy') as OrderBy;
   const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQuery(
-    gameInfiniteListQueryOptions({ keyword, orderBy }),
+    gameInfiniteListQueryOptions({ keyword, orderBy, publisher }),
   );
 
   return (

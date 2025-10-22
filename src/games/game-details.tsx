@@ -1,7 +1,8 @@
 'use client';
 
-import { Grid, Typography } from "@mui/material";
+import { Grid, Link, Typography } from "@mui/material";
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 type MediaAssets = {
   cover: { image_id: string };
@@ -94,8 +95,30 @@ export function GameDetails(gameDetails: GameReleaseDetailsProps) {
 
   const detailsValueFallbackText = 'N/A';
 
+  const publisherName = gameDetails.companies.find(company => company.publisher)?.name;
+
+  const router = useRouter();
+
+  const handlePublisherClick = (companyName?: string) => {
+    if (!companyName) return;
+    const url = `/games?publisher=${encodeURIComponent(companyName)}`;
+    router.push(url);
+  };
+
   const gameDetailsList = [
-    { key: "Publisher", value: gameDetails.companies.find(company => company.publisher)?.name || <Typography>{detailsValueFallbackText}</Typography> },
+    {
+      key: "Publisher", value: publisherName ? (
+        <Link
+          component="button"
+          variant="body1"
+          onClick={() => handlePublisherClick(publisherName)}
+          underline="hover"
+          sx={{ padding: 0, minWidth: 0 }}
+        >
+          {publisherName}
+        </Link>
+      ) : <Typography>{detailsValueFallbackText}</Typography>
+    },
     { key: "Year released", value: gameDetails.year_released },
     { key: "Media", value: gameDetails.distro.format },
     { key: "Language", value: gameDetails.lang },

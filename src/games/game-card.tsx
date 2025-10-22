@@ -2,7 +2,6 @@
 
 'use client';
 
-import React from 'react';
 import { CDN_URL } from '@/common/common-utils';
 import { NextLink } from '@/routing/next-link';
 import { Box, CardActionArea } from '@mui/material';
@@ -11,6 +10,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/system';
+import React from 'react';
 
 
 export type GameReleaseCardProps = {
@@ -86,7 +86,7 @@ export function GameReleaseCard(game: GameReleaseCardProps) {
             flexDirection: 'column',
           }}
         >
-          {}
+          { }
           <Box sx={{ flex: '1', position: 'relative' }}>
             <CardMedia
               sx={{
