@@ -43,7 +43,7 @@ export default async function GamesPage({
         <CardTitle as="h1">Games Catalog</CardTitle>
         <CardContent>
           <Suspense>
-            <GameSearchForm />          
+            <GameSearchForm />
             <GameInfiniteList />
           </Suspense>
         </CardContent>

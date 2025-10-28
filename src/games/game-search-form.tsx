@@ -61,7 +61,7 @@ export function GameSearchForm() {
             select
             fullWidth
             label="Sort by"
-            defaultValue={orderBy === '' ? OrderBy.DateAdded : orderBy } // TODO: should be synced with API defaults
+            defaultValue={orderBy === '' ? OrderBy.DateAdded : orderBy} // TODO: should be synced with API defaults
             variant="standard"
             onChange={handleSortByChange}
           >

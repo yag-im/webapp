@@ -2,10 +2,11 @@ import { CDN_URL } from '@/common/common-utils';
 import { GameDetails } from '@/games/game-details';
 import { getGameDetails } from '@/games/game-details-query';
 import { GamePlayer } from '@/games/game-player';
+import ScreenshotGallery from '@/games/screenshot-gallery';
 import { NextLink } from '@/routing/next-link';
 import { getMetadata } from '@/seo/seo-utils';
 import { ArrowBack } from '@mui/icons-material';
-import { Box, Button, Card, CardContent, Grid, ImageList, ImageListItem, Paper, Stack, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Grid, Paper, Stack, Typography } from '@mui/material';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -217,40 +218,7 @@ export default async function GamePage({
       <Grid item xs={12} sm={12} md={9}>
         <Typography variant="h7" paragraph>Description</Typography>
         <Typography variant="body1" paragraph>{gameDetails.short_descr}</Typography>
-        <Typography variant="h7" paragraph>Game Screens</Typography>
-        <ImageList cols={5} rowHeight={'auto'}>
-          {screenshots && screenshots.map((item) => (
-            <ImageListItem
-              key={item.image_id}>
-              <Box
-                sx={{
-                  position: 'relative',
-                  width: '100%',
-                  height: '100%',
-                  overflow: 'hidden',
-                  border: '3px solid transparent',
-                  transition: 'border-color 0.3s ease-out',
-                  '&:hover': {
-                    borderColor: '#663399', // TODO: Choose color
-                  },
-                }}
-              >
-                <Box
-                  component="img"
-                  src={`${CDN_URL}/screenshots/${item.image_id}.jpg`}
-                  srcSet={`${CDN_URL}/screenshots/${item.image_id}.jpg`}
-                  alt={item.image_id}
-                  loading="lazy"
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                  }}
-                />
-              </Box>
-            </ImageListItem>
-          ))}
-        </ImageList>
+        {screenshots && screenshots.length > 0 && <ScreenshotGallery screenshots={screenshots} />}
       </Grid>
       <Grid item xs={9} sm={6} md={3}>
         <Card sx={{
