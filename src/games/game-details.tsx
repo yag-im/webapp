@@ -19,6 +19,7 @@ export type GameReleaseDetailsProps = {
     ua: {
       lock_pointer: boolean;
     };
+    loading_duration: number;
   };
   companies: {
     id: number;
