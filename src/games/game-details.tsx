@@ -65,6 +65,7 @@ export type GameReleaseDetailsProps = {
   ts_added: string;
   uuid: string;
   year_released: number;
+  tags: string[];
 };
 
 const esrbRatingImages: { [key: string]: string } = {

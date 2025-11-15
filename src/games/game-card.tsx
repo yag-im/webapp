@@ -23,6 +23,7 @@ export type GameReleaseCardProps = {
   year_released: number;
   platform: string;
   distro_format: string;
+  tags: string[];
 };
 
 const LimitedCardTitle = styled(Typography)`
