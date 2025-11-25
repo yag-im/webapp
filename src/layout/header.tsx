@@ -2,18 +2,18 @@ import AccountSwitch from '@/account/switch';
 import { APP_TITLE } from '@/common/common-utils';
 import { NextLink } from '@/routing/next-link';
 import { Box, Divider, Grid, IconButton, Typography } from '@mui/material';
-import Image from 'next/image';
+import Image, { type StaticImageData } from 'next/image';
 
 import Logo from '@/images/logos/yag.im-logo.png';
 import { GitHub } from '@mui/icons-material';
 
-interface LogoImageProps {
-  src: string;
-  alt: string;
-}
+type LogoImageProps = Omit<React.ComponentProps<typeof Image>, 'src' | 'alt'> & {
+  src: string | StaticImageData;
+  alt?: string;
+};
 
 const LogoImage = ({ src, alt, ...rest }: LogoImageProps) => {
-  return <Image src={src} alt={alt} height={106} {...rest} />;
+  return <Image src={src as any} alt={alt ?? ''} height={106} {...rest} />;
 }
 
 export function Header() {
