@@ -4,7 +4,7 @@ import { NextLink } from '@/routing/next-link';
 import { Box, Divider, Grid, IconButton, Typography } from '@mui/material';
 import Image from 'next/image';
 
-import Logo from '@/images/powered_by/yag.im-logo.svg';
+import Logo from '@/images/logos/yag.im-logo.png';
 import { GitHub } from '@mui/icons-material';
 
 interface LogoImageProps {
@@ -13,7 +13,7 @@ interface LogoImageProps {
 }
 
 const LogoImage = ({ src, alt, ...rest }: LogoImageProps) => {
-  return <Image src={src} alt={alt} height={96} {...rest} />;
+  return <Image src={src} alt={alt} height={106} {...rest} />;
 }
 
 export function Header() {
