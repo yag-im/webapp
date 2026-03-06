@@ -51,6 +51,7 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
   const nextGameReleaseUuid = useRef<string | null | undefined>(null);
   const activeSessionId = useRef<string | null>(null);
   const nextUrl = useRef<string | null>(null);
+  const serverErrorOccurred = useRef(false);
 
   function createSessionWrap(appReleaseUuid: string) {
     // initiate new session creation (async);
@@ -100,6 +101,10 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
       // on exit fullscreen cb handler
       showDefaultCursor();
       // activeSessionId.current can be null if game was exited the natural way (e.g. through the game menu)
+      if (serverErrorOccurred.current) {
+        // server error dialog is being shown, don't reload
+        return;
+      }
       if (activeSessionId.current) {
         // there is an active session, e.g. user has long-pressed the Esc button
         setShowExitGameDialog(true);
@@ -146,9 +151,11 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
         console.error(`[GamePlayer] webRtcApi listener catched an error: ${errEvent.error.message}`);
         if (errEvent.error.code === 1409) {
           console.error(`[GamePlayer] server error 1409: service unavailable`);
+          serverErrorOccurred.current = true;
           exitFullscreen();
           setShowLoadingMsg(false);
           showDefaultCursor();
+          setShowPlayButton(true);
           setShowServerErrorDialog(true);
         }
       },
@@ -445,6 +452,7 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
           disablePortal={isFullScreen()} // otherwise dialog is not visible in the fullscreen mode
           onClose={function (): void {
             console.log("[GamePlayer] ServerErrorDialog: close");
+            serverErrorOccurred.current = false;
             setShowServerErrorDialog(false);
             window.location.reload();
           }} />}
