@@ -108,140 +108,144 @@ export default class ComChannel extends EventTarget {
         if (msg && (typeof (msg) === "object")) {
           switch (msg.type) {
 
-          case SignallingServerMessageType.welcome:
-            this._channelId = msg.peerId;
-            try {
-              // TODO: can't use this.send() here cos it checks for `this._ready` flag which is false at that point
-              this._ws.send(JSON.stringify({
-                type: "setPeerStatus",
-                roles: ["listener"],
-                meta: meta
-              }));
-            } catch (ex) {
-              this.dispatchEvent(new ErrorEvent("error", {
-                message: "cannot initialize connection to signaling server",
-                error: ex
-              }));
-              this.close();
-            }
-            break;
-
-          case SignallingServerMessageType.peerStatusChanged:
-            if (msg.peerId === this._channelId) {
-              if (!this._ready && msg.roles.includes("listener")) {
-                this._ready = true;
-                this.dispatchEvent(new Event("ready"));
-                // this.send({ type: "list" });
+            case SignallingServerMessageType.welcome:
+              this._channelId = msg.peerId;
+              try {
+                // TODO: can't use this.send() here cos it checks for `this._ready` flag which is false at that point
+                this._ws.send(JSON.stringify({
+                  type: "setPeerStatus",
+                  roles: ["listener"],
+                  meta: meta
+                }));
+              } catch (ex) {
+                this.dispatchEvent(new ErrorEvent("error", {
+                  message: "cannot initialize connection to signaling server",
+                  error: ex
+                }));
+                this.close();
               }
+              break;
 
-              if (this._producerSession && msg.roles.includes("producer")) {
-                this._producerSession.onProducerRegistered();
+            case SignallingServerMessageType.peerStatusChanged:
+              if (msg.peerId === this._channelId) {
+                if (!this._ready && msg.roles.includes("listener")) {
+                  this._ready = true;
+                  this.dispatchEvent(new Event("ready"));
+                  // this.send({ type: "list" });
+                }
+
+                if (this._producerSession && msg.roles.includes("producer")) {
+                  this._producerSession.onProducerRegistered();
+                }
+              } else {
+                const normalizedProducer = normalizeProducer(msg, this._channelId);
+                if (normalizedProducer) {
+                  if (msg.roles.includes("producer")) {
+                    this.dispatchEvent(new CustomEvent("producerAdded", { detail: normalizedProducer }));
+                  } else {
+                    this.dispatchEvent(new CustomEvent("producerRemoved", { detail: normalizedProducer }));
+                  }
+                }
               }
-            } else {
-              const normalizedProducer = normalizeProducer(msg, this._channelId);
-              if (normalizedProducer) {
-                if (msg.roles.includes("producer")) {
+              break;
+
+            case SignallingServerMessageType.list:
+              for (const producer of msg.producers) {
+                const normalizedProducer = normalizeProducer(producer, this._channelId);
+                if (normalizedProducer) {
                   this.dispatchEvent(new CustomEvent("producerAdded", { detail: normalizedProducer }));
-                } else {
-                  this.dispatchEvent(new CustomEvent("producerRemoved", { detail: normalizedProducer }));
                 }
               }
-            }
-            break;
+              break;
 
-          case SignallingServerMessageType.list:
-            for (const producer of msg.producers) {
-              const normalizedProducer = normalizeProducer(producer, this._channelId);
-              if (normalizedProducer) {
-                this.dispatchEvent(new CustomEvent("producerAdded", { detail: normalizedProducer }));
+            case SignallingServerMessageType.sessionCreated:
+              {
+                this.dispatchEvent(new CustomEvent("sessionCreated", { detail: msg.session_id }));
               }
-            }
-            break;
+              break;
 
-          case SignallingServerMessageType.sessionCreated:
-            {
-              this.dispatchEvent(new CustomEvent("sessionCreated", { detail: msg.session_id }));
-            }
-            break;
+            case SignallingServerMessageType.sessionEnded:
+              {
+                this.dispatchEvent(new CustomEvent("sessionEnded", { detail: msg.session_id }));
+              }
+              break;
 
-          case SignallingServerMessageType.sessionEnded:
-            {
-              this.dispatchEvent(new CustomEvent("sessionEnded", { detail: msg.session_id }));
-            }
-            break;
+            case SignallingServerMessageType.sessionStarted:
+              {
+                const session = this.getConsumerSession(msg.peerId);
+                if (session) {
+                  delete this._consumerSessions[msg.peerId];
 
-          case SignallingServerMessageType.sessionStarted:
-            {
-              const session = this.getConsumerSession(msg.peerId);
-              if (session) {
-                delete this._consumerSessions[msg.peerId];
+                  session.onSessionStarted(msg.peerId, msg.sessionId);
+                  if (session.sessionId && !(session.sessionId in this._consumerSessions)) {
+                    this._consumerSessions[session.sessionId] = session;
+                  } else {
+                    session.close();
+                  }
+                }
+              }
+              break;
 
-                session.onSessionStarted(msg.peerId, msg.sessionId);
-                if (session.sessionId && !(session.sessionId in this._consumerSessions)) {
-                  this._consumerSessions[session.sessionId] = session;
-                } else {
+            case SignallingServerMessageType.peer:
+              {
+                const session = this.getConsumerSession(msg.sessionId);
+                if (session) {
+                  session.onSessionPeerMessage(msg);
+                } else if (this._producerSession) {
+                  this._producerSession.onSessionPeerMessage(msg);
+                }
+              }
+              break;
+
+            case SignallingServerMessageType.startSession:
+              if (this._producerSession) {
+                this._producerSession.onStartSessionMessage(msg);
+              }
+              break;
+
+            case SignallingServerMessageType.endSession:
+              {
+                const session = this.getConsumerSession(msg.sessionId);
+                if (session) {
                   session.close();
+                } else if (this._producerSession) {
+                  this._producerSession.onEndSessionMessage(msg);
                 }
+
+                /*
+                  closing ComCannel is required to reestablish connection with sigsvc
+                  usually when this event occurs, peer-consumer is deleted on the sigsvc side and it becomes "unconnectable"
+                  ConsumerSession (WebRTCSession) will be also closed from the close() handler
+                */
+                //this.close();
               }
-            }
-            break;
+              break;
 
-          case SignallingServerMessageType.peer:
-            {
-              const session = this.getConsumerSession(msg.sessionId);
-              if (session) {
-                session.onSessionPeerMessage(msg);
-              } else if (this._producerSession) {
-                this._producerSession.onSessionPeerMessage(msg);
+            case SignallingServerMessageType.sessionsList:
+              {
+                this.dispatchEvent(new CustomEvent("sessionsList", { detail: msg.sessions }));
               }
-            }
-            break;
+              break;
 
-          case SignallingServerMessageType.startSession:
-            if (this._producerSession) {
-              this._producerSession.onStartSessionMessage(msg);
-            }
-            break;
-
-          case SignallingServerMessageType.endSession:
-            {
-              const session = this.getConsumerSession(msg.sessionId);
-              if (session) {
-                session.close();
-              } else if (this._producerSession) {
-                this._producerSession.onEndSessionMessage(msg);
+            case SignallingServerMessageType.session:
+              {
+                this.dispatchEvent(new CustomEvent("session", { detail: msg.session }));
               }
+              break;
 
-              /*
-                closing ComCannel is required to reestablish connection with sigsvc
-                usually when this event occurs, peer-consumer is deleted on the sigsvc side and it becomes "unconnectable"
-                ConsumerSession (WebRTCSession) will be also closed from the close() handler
-              */
-              //this.close();
-            }
-            break;
-          
-          case SignallingServerMessageType.sessionsList:
-            {
-              this.dispatchEvent(new CustomEvent("sessionsList", { detail: msg.sessions }));
-            }
-            break;
-          
-          case SignallingServerMessageType.session:
-            {
-              this.dispatchEvent(new CustomEvent("session", { detail: msg.session }));
-            }
-            break;
+            case SignallingServerMessageType.error:
+              {
+                const err = new Error(msg.message);
+                err.code = msg.code;
+                this.dispatchEvent(new ErrorEvent("error", {
+                  message: "error received from signaling server",
+                  error: err,
+                }));
+              }
+              break;
 
-          case SignallingServerMessageType.error:
-            this.dispatchEvent(new ErrorEvent("error", {
-              message: "error received from signaling server",
-              error: new Error(msg.message),
-            }));
-            break;
-
-          default:
-            throw new Error(`unknown message type: "${msg.type}"`);
+            default:
+              throw new Error(`unknown message type: "${msg.type}"`);
           }
         }
       } catch (ex) {

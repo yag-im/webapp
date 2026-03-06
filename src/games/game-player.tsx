@@ -12,6 +12,7 @@ import ExitGameDialog from "./game-exit";
 import { exitFullscreen, getUserProfile, hideCursor, isFullScreen, lockKeyboard, lockPointer, requestFullscreen, showDefaultCursor, showWaitCursor } from "./game-player-helpers";
 import ResumeGameDialog from "./game-resume";
 import SafariWarningDialog from "./safari-warning";
+import ServerErrorDialog from "./server-error";
 
 
 type GameSession = {
@@ -40,6 +41,7 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
   const [showExitGameDialog, setShowExitGameDialog] = useState(false);
   const [showLoadingMsg, setShowLoadingMsg] = useState(false);
   const [showSafariWarningDialog, setShowSafariWarningDialog] = useState(false);
+  const [showServerErrorDialog, setShowServerErrorDialog] = useState(false);
 
   const videoElementRef = useRef<React.ElementRef<'video'>>(null);
   const gamePlayerContainerRef = useRef<React.ElementRef<'div'>>(null);
@@ -82,8 +84,8 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
 
     // Lock pointer (for certain games, mostly Win9x on dosbox-x)
     // In Firefox pointer lock could be requested only on the explicit element click
-    videoElementRef.current?.addEventListener('click', (e) => {      
-      if (gameDetails.app_reqs.ua.lock_pointer && !document.pointerLockElement) {        
+    videoElementRef.current?.addEventListener('click', (e) => {
+      if (gameDetails.app_reqs.ua.lock_pointer && !document.pointerLockElement) {
         lockPointer(videoElementRef.current);
       }
     });
@@ -93,7 +95,7 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
     if (gameDetails.app_reqs.ua.lock_pointer && !document.pointerLockElement) {
       lockPointer(videoElementRef.current);
     }
-   
+
     requestFullscreen(gamePlayerContainerRef.current, () => {
       // on exit fullscreen cb handler
       showDefaultCursor();
@@ -140,8 +142,15 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
     console.log("[GamePlayer] entering initRemoteStreams")
 
     const listener = {
-      onError(errEvent: { error: { message: string; }; }) {
+      onError(errEvent: { error: { message: string; code?: number }; }) {
         console.error(`[GamePlayer] webRtcApi listener catched an error: ${errEvent.error.message}`);
+        if (errEvent.error.code === 1409) {
+          console.error(`[GamePlayer] server error 1409: service unavailable`);
+          exitFullscreen();
+          setShowLoadingMsg(false);
+          showDefaultCursor();
+          setShowServerErrorDialog(true);
+        }
       },
 
       async sessionsList(sessions: GameSession[]) {
@@ -421,7 +430,7 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
               console.error("[GamePlayer] invalid state: no active session");
             }
           }} />}
-      
+
       {showSafariWarningDialog &&
         <SafariWarningDialog
           disablePortal={isFullScreen()} // otherwise dialog is not visible in the fullscreen mode
@@ -429,6 +438,15 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
             // exit game
             console.log("[GamePlayer] SafariWarningDialog: exit game");
             setShowSafariWarningDialog(false);
+          }} />}
+
+      {showServerErrorDialog &&
+        <ServerErrorDialog
+          disablePortal={isFullScreen()} // otherwise dialog is not visible in the fullscreen mode
+          onClose={function (): void {
+            console.log("[GamePlayer] ServerErrorDialog: close");
+            setShowServerErrorDialog(false);
+            window.location.reload();
           }} />}
     </div>
   );
