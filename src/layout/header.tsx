@@ -3,14 +3,13 @@
 import AccountSwitch from '@/account/switch';
 import { APP_TITLE } from '@/common/common-utils';
 import { NextLink } from '@/routing/next-link';
-import { Box, Divider, Grid, IconButton, Typography } from '@mui/material';
+import { Box, Divider, Grid, Typography } from '@mui/material';
 import Image, { type StaticImageData } from 'next/image';
 
 import { useState } from 'react';
 
 import LogoHint from '@/images/logos/yag.im-logo-hint.png';
 import Logo from '@/images/logos/yag.im-logo.png';
-import { GitHub } from '@mui/icons-material';
 
 type LogoImageProps = Omit<React.ComponentProps<typeof Image>, 'src' | 'alt'> & {
   src: string | StaticImageData;
@@ -30,7 +29,7 @@ const LogoImage = ({ src, alt, scale = 1, style, ...rest }: LogoImageProps) => {
     transformOrigin: (style && style.transformOrigin) ? style.transformOrigin : 'center center',
   };
 
-  return <Image src={src as any} alt={alt ?? ''} height={106} style={combinedStyle} {...rest} />;
+  return <Image src={src as any} alt={alt ?? ''} height={52} style={combinedStyle} {...rest} />;
 }
 
 export function Header() {
@@ -47,19 +46,19 @@ export function Header() {
 
   return (
     <header>
-      <Grid container display="flex" alignItems="center" justifyContent="space-around">
-        <Grid item display="flex" alignItems="center" justifyContent="flex-start" xs={8}>
+      <Grid container display="flex" alignItems="center" justifyContent="space-around" py={1}>
+        <Grid item display="flex" alignItems="center" justifyContent="flex-start" xs={8} pl={2}>
           <NextLink href="/">
-            <LogoImage src={Logo} alt="YAG.IM Logo" scale={1.3} />
+            <LogoImage src={Logo} alt="YAG.IM Logo" />
           </NextLink>
-          <Box display="flex" flexDirection="column" ml={0}>
-            <NextLink href="/">
-              <Typography variant="h4">{APP_TITLE.toUpperCase()}</Typography>
+          <Box display="flex" flexDirection="column" ml={1.5}>
+            <NextLink href="/" className="text-black">
+              <Typography variant="h5">{APP_TITLE.toUpperCase()}</Typography>
             </NextLink>
-            <NextLink href="/">
+            <NextLink href="/" className="text-black">
               <Typography
-                variant="h4"
-                fontSize={16}
+                variant="body2"
+                fontSize={12}
                 onMouseEnter={onHintEnter}
                 onMouseMove={onHintMove}
                 onMouseLeave={onHintLeave}
@@ -73,14 +72,9 @@ export function Header() {
         <Grid item display="flex" justifyContent="flex-end" pr={2} xs={4}>
           <Box
             sx={{
-              display: { md: 'block', xs: "none" }
+              display: 'block'
             }}
           >
-            <a href="https://github.com/yag-im" target="_blank" rel="noopener noreferrer">
-              <IconButton>
-                <GitHub />
-              </IconButton>
-            </a>
             <AccountSwitch />
           </Box>
         </Grid>

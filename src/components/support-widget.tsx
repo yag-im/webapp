@@ -20,8 +20,8 @@ export function SupportWidget() {
                 backgroundColor: 'white',
                 borderRadius: 2,
                 boxShadow: 3,
-                p: 2,
-                width: 200,
+                p: 1,
+                width: 120,
                 textDecoration: 'none',
                 cursor: 'pointer',
                 transition: 'transform 0.2s, box-shadow 0.2s',
@@ -34,15 +34,15 @@ export function SupportWidget() {
             <Image
                 src={buyMeACoffeeQr}
                 alt="Buy Me a Coffee QR Code"
-                width={128}
-                height={128}
+                width={80}
+                height={80}
                 style={{ borderRadius: '8px' }}
             />
 
-            <Typography variant="subtitle1" fontWeight="bold" mt={1} gutterBottom color="text.primary">
+            <Typography variant="caption" fontWeight="bold" mt={0.5} gutterBottom color="text.primary">
                 Support the project
             </Typography>
-            <Typography variant="body2" color="text.secondary" textAlign="center">
+            <Typography variant="caption" color="text.secondary" textAlign="center" sx={{ fontSize: '0.65rem' }}>
                 Enjoy classic adventure games free on <strong>yag.im</strong>!
                 Support us to keep these timeless experiences open for everyone.
             </Typography>
