@@ -19,6 +19,36 @@ const DmcaPolicy = () => {
         </Typography>
 
         <Typography variant="h6" gutterBottom>
+          Educational &amp; Research Notice
+        </Typography>
+        <Typography paragraph>
+          This platform is a non-commercial digital archive intended strictly for educational,
+          historical, and scholarly research purposes. All software titles accessible herein are
+          provided via user-directed submissions through our open-source archival flow.
+        </Typography>
+
+        <Typography variant="h6" gutterBottom>
+          Notice of Content Verification
+        </Typography>
+        <Typography paragraph>
+          While we perform post-submission verification to ensure metadata accuracy and system
+          compatibility, yag.im operates as a service provider and does not claim ownership or
+          editorial control over user-submitted content. We respect the intellectual property rights
+          of others and will expeditiously remove any material found to be in violation of copyright
+          law upon receipt of a valid DMCA notice.
+        </Typography>
+
+        <Typography variant="h6" gutterBottom>
+          Limitation of Liability
+        </Typography>
+        <Typography paragraph>
+          Users are solely responsible for ensuring their use of the platform complies with local
+          laws and institutional policies. By using this site, you acknowledge that yag.im provides
+          technical infrastructure only and is not liable for unauthorized use or distribution of
+          content by third parties.
+        </Typography>
+
+        <Typography variant="h6" gutterBottom>
           Designated Agent
         </Typography>
         <Typography paragraph>
@@ -69,7 +99,6 @@ const DmcaPolicy = () => {
           Please note that under Section 512(f) of the DMCA, any person who knowingly and materially
           misrepresents that material or activity is infringing may be subject to liability for damages.
         </Typography>
-
       </Paper>
     </Container>
   );
