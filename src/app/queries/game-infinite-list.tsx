@@ -27,7 +27,7 @@ export function gameInfiniteListQueryOptions({ keyword, orderBy, publisher }: { 
           'Content-Type': 'application/json'
         })
       };
-      // we need to supply cookie in a server-side fetch in order to populate current_user in webapi (to check kids mode)    
+      // we need to supply cookie in a server-side fetch in order to populate current_user in webapi (to check age mode)    
       if (headers().has('cookie')) {
         requestOptions.headers.append('cookie', headers().get('cookie')!);
       }

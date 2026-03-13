@@ -16,23 +16,23 @@ import moment from 'moment';
 import * as React from 'react';
 import type { UserProfileProps } from './switch';
 
-type AgeMode = 'kids' | 'teens' | 'adult';
+type AgeMode = 'kid' | 'teen' | 'adult';
 
 function getAgeMode(dob: number): AgeMode {
   const now = Date.now();
   const ageMs = now - dob;
-  const kidsMaxMs = 10 * 365 * 24 * 3600 * 1000;
-  const teensMaxMs = 18 * 365 * 24 * 3600 * 1000;
-  if (ageMs < kidsMaxMs) return 'kids';
-  if (ageMs < teensMaxMs) return 'teens';
+  const kidMaxMs = 10 * 365 * 24 * 3600 * 1000;
+  const teenMaxMs = 18 * 365 * 24 * 3600 * 1000;
+  if (ageMs < kidMaxMs) return 'kid';
+  if (ageMs < teenMaxMs) return 'teen';
   return 'adult';
 }
 
 function ageModeToDate(mode: AgeMode): string {
   const now = new Date();
   switch (mode) {
-    case 'kids': return moment(now).format('YYYY-MM-DD');
-    case 'teens': return moment(new Date(now.getTime() - 13 * 365 * 24 * 3600 * 1000)).format('YYYY-MM-DD');
+    case 'kid': return moment(now).format('YYYY-MM-DD');
+    case 'teen': return moment(new Date(now.getTime() - 13 * 365 * 24 * 3600 * 1000)).format('YYYY-MM-DD');
     case 'adult': return '1970-01-01';
   }
 }
@@ -181,8 +181,8 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
               fullWidth
               sx={{ pl: 2 }}
             >
-              <ToggleButton value="kids">Kids</ToggleButton>
-              <ToggleButton value="teens">Teens</ToggleButton>
+              <ToggleButton value="kid">Kid</ToggleButton>
+              <ToggleButton value="teen">Teen</ToggleButton>
               <ToggleButton value="adult">Adult</ToggleButton>
             </ToggleButtonGroup>
           </ListItemButton>
