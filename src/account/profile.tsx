@@ -1,7 +1,7 @@
 'use client'
 
 import { AccountCircleOutlined, AddTask, ChildFriendly, Feedback, Logout, Mail } from '@mui/icons-material';
-import { Checkbox, IconButton, ListSubheader, Typography } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, ListSubheader, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
@@ -16,14 +16,28 @@ import moment from 'moment';
 import * as React from 'react';
 import type { UserProfileProps } from './switch';
 
-function isKid(dob: number) {
-  const kidsAge = 10 * 365 * 24 * 3600; // 5 years old
+type AgeMode = 'kids' | 'teens' | 'adult';
+
+function getAgeMode(dob: number): AgeMode {
   const now = Date.now();
-  const diff = now - dob;
-  return diff < kidsAge;
+  const ageMs = now - dob;
+  const kidsMaxMs = 10 * 365 * 24 * 3600 * 1000;
+  const teensMaxMs = 18 * 365 * 24 * 3600 * 1000;
+  if (ageMs < kidsMaxMs) return 'kids';
+  if (ageMs < teensMaxMs) return 'teens';
+  return 'adult';
 }
 
-const TruncatedListItemText = styled(ListItemText)(({}) => ({
+function ageModeToDate(mode: AgeMode): string {
+  const now = new Date();
+  switch (mode) {
+    case 'kids': return moment(now).format('YYYY-MM-DD');
+    case 'teens': return moment(new Date(now.getTime() - 13 * 365 * 24 * 3600 * 1000)).format('YYYY-MM-DD');
+    case 'adult': return '1970-01-01';
+  }
+}
+
+const TruncatedListItemText = styled(ListItemText)(({ }) => ({
   '& .MuiTypography-root': {
     whiteSpace: 'nowrap',
     overflow: 'hidden',
@@ -42,7 +56,8 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
     bottom: false,
     right: false,
   });
-  const [isKidsModeChecked, setIsKidsModeChecked] = React.useState(isKid(Date.parse(userProfile.dob)));
+  const [ageMode, setAgeMode] = React.useState<AgeMode>(getAgeMode(Date.parse(userProfile.dob)));
+  const [adultConfirmOpen, setAdultConfirmOpen] = React.useState(false);
   const updUserProfile = React.useRef<UserProfileProps | null>(null);
   const theme = useTheme();
 
@@ -50,9 +65,27 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
     updUserProfile.current = structuredClone(userProfile);
   }, []);
 
-  function handleKidsModeChange(isChecked: boolean) {
-    setIsKidsModeChecked(isChecked);
-    if (updUserProfile.current) { updUserProfile.current.dob = isChecked ? moment(new Date()).format('YYYY-MM-DD') : "1970-01-01"; }
+  function applyAgeMode(mode: AgeMode) {
+    setAgeMode(mode);
+    if (updUserProfile.current) { updUserProfile.current.dob = ageModeToDate(mode); }
+  }
+
+  function handleAgeModeChange(_event: React.MouseEvent<HTMLElement>, newMode: AgeMode | null) {
+    if (newMode === null) return;
+    if (newMode === 'adult') {
+      setAdultConfirmOpen(true);
+      return;
+    }
+    applyAgeMode(newMode);
+  }
+
+  function handleAdultConfirm() {
+    setAdultConfirmOpen(false);
+    applyAgeMode('adult');
+  }
+
+  function handleAdultCancel() {
+    setAdultConfirmOpen(false);
   }
 
   const updateUser = async (updatedUserProfile: UserProfileProps) => {
@@ -83,7 +116,7 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
 
         if (!open && updUserProfile.current && (!_.isEqual(updUserProfile.current, userProfile))) {
           await updateUser(updUserProfile.current);
-          if (isKid(Date.parse(updUserProfile.current.dob)) !== isKid(Date.parse(userProfile.dob))) { window.location.reload(); }
+          if (getAgeMode(Date.parse(updUserProfile.current.dob)) !== getAgeMode(Date.parse(userProfile.dob))) { window.location.reload(); }
         }
 
         setState({ ...state, [anchor]: open });
@@ -122,30 +155,36 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
           </ListItemButton>
         </ListItem>
 
-        <ListItem
-          key='KidsMode'
-          secondaryAction={
-            <Checkbox
-              checked={isKidsModeChecked}
-              onChange={(event) => { handleKidsModeChange(event.target.checked); }}
-              sx={{
-                color: theme.palette.primary.main
-              }}
-            />
-          }
-        >
+        <ListItem key='AgeMode'>
           <ListItemButton
             disableRipple
             sx={{
               cursor: 'default',
               '&:hover': { backgroundColor: 'transparent' },
-              '&:focus': { outline: 'none' }
+              '&:focus': { outline: 'none' },
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: 1,
             }}
           >
-            <ListItemIcon>
-              <ChildFriendly />
-            </ListItemIcon>
-            <ListItemText primary='Kids Mode' />
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <ListItemIcon>
+                <ChildFriendly />
+              </ListItemIcon>
+              <ListItemText primary='Age Mode' />
+            </Box>
+            <ToggleButtonGroup
+              value={ageMode}
+              exclusive
+              onChange={handleAgeModeChange}
+              size="small"
+              fullWidth
+              sx={{ pl: 2 }}
+            >
+              <ToggleButton value="kids">Kids</ToggleButton>
+              <ToggleButton value="teens">Teens</ToggleButton>
+              <ToggleButton value="adult">Adult</ToggleButton>
+            </ToggleButtonGroup>
           </ListItemButton>
         </ListItem>
 
@@ -205,6 +244,18 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
         >
           {list(anchor)}
         </Drawer>
+        <Dialog open={adultConfirmOpen} onClose={handleAdultCancel}>
+          <DialogTitle>Age Verification</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              This content is intended for mature audiences. By selecting Adult mode, you confirm that you are 18 years of age or older.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleAdultCancel}>Cancel</Button>
+            <Button onClick={handleAdultConfirm} variant="contained">I confirm I am 18+</Button>
+          </DialogActions>
+        </Dialog>
       </React.Fragment>
     </div>
   );
