@@ -21,7 +21,7 @@ type AgeMode = 'kid' | 'teen' | 'adult';
 function getAgeMode(dob: number): AgeMode {
   const now = Date.now();
   const ageMs = now - dob;
-  const kidMaxMs = 10 * 365 * 24 * 3600 * 1000;
+  const kidMaxMs = 13 * 365 * 24 * 3600 * 1000;
   const teenMaxMs = 18 * 365 * 24 * 3600 * 1000;
   if (ageMs < kidMaxMs) return 'kid';
   if (ageMs < teenMaxMs) return 'teen';
@@ -32,7 +32,7 @@ function ageModeToDate(mode: AgeMode): string {
   const now = new Date();
   switch (mode) {
     case 'kid': return moment(now).format('YYYY-MM-DD');
-    case 'teen': return moment(new Date(now.getTime() - 13 * 365 * 24 * 3600 * 1000)).format('YYYY-MM-DD');
+    case 'teen': return moment(new Date(now.getTime() - 15 * 365 * 24 * 3600 * 1000)).format('YYYY-MM-DD');
     case 'adult': return '1970-01-01';
   }
 }
