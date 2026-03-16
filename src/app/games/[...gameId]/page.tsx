@@ -21,7 +21,7 @@ const feedbackCardContents = [
     },
   },
   {
-    title: 'Request a new game',
+    title: 'Add a new game',
     description: 'Desperately searching for your <br /> favorite childhood game? <br /> Let us know and we’ll help you to add it!',
     button: {
       text: 'Open Discord Channel',
