@@ -39,14 +39,13 @@ export function Footer() {
         padding: '8px 0',
       }}
     >
-      <div style={{ position: 'relative', width: '100%', padding: '4px 16px' }}>
-        {/* --- Legal Links (centered across full width) --- */}
+      <div style={{ maxWidth: '1280px', margin: '0 auto', width: '100%', padding: '4px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {/* --- Legal Links (left-aligned) --- */}
         <Stack
           direction="row"
-          spacing={{ xs: 1, sm: 1.5, md: 2 }}
+          spacing={{ xs: 0.5, sm: 1, md: 1.5 }}
           flexWrap="wrap"
           divider={<Divider orientation="vertical" flexItem />}
-          justifyContent="center"
           alignItems="center"
         >
           <NextLink href="/legal/about-us" className="text-black">
@@ -78,11 +77,8 @@ export function Footer() {
           spacing={1}
           alignItems="center"
           sx={{
-            position: 'absolute',
-            right: 8,
-            top: '50%',
-            transform: 'translateY(-50%)',
             display: { xs: 'none', lg: 'flex' },
+            flexShrink: 0,
           }}
         >
           <Typography

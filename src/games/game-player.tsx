@@ -377,7 +377,7 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
             startIcon={<PlayArrow />}
             onClick={handlePlayButtonClick}
           >
-            PLAY GAME
+            PLAY
           </Button>
         </Box>
       )}

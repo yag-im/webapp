@@ -64,7 +64,7 @@ export default function ScreenshotGallery({ screenshots = [], columns = 5 }: Pro
 
     return (
         <>
-            <Typography variant="h6" paragraph>
+            <Typography variant="h7" paragraph>
                 Game Screens
             </Typography>
 

@@ -119,7 +119,7 @@ export default async function GamePage({
         </NextLink>
       </Grid>
       <Grid item xs={12}>
-        <Typography noWrap={true} variant='h4'>{gameDetails.name}</Typography>
+        <Typography noWrap={true} variant='h4' sx={{ fontWeight: 400 }}>{gameDetails.name}</Typography>
         {/* Game title - 1 line max, then ellipsis */}
       </Grid>
 

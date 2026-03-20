@@ -126,7 +126,7 @@ export function GameReleaseCard(game: GameReleaseCardProps) {
             }}
           >
             <Box><LimitedCardTitle
-              sx={{ textAlign: 'left' }}
+              sx={{ textAlign: 'left', fontWeight: 400 }}
               gutterBottom variant="h5"
             >
               {game.name}
