@@ -31,15 +31,15 @@ export function Footer() {
   return (
     <footer
       style={{
-        borderTop: '1px solid #f5f5f5',
+        borderTop: '1px solid rgba(0,0,0,0.06)',
         position: 'sticky',
         bottom: 0,
-        backgroundColor: '#fff',
+        backgroundColor: '#ffffff',
         zIndex: 10,
-        padding: '4px 0',
+        padding: '8px 0',
       }}
     >
-      <div style={{ position: 'relative', width: '100%', padding: '4px 8px' }}>
+      <div style={{ position: 'relative', width: '100%', padding: '4px 16px' }}>
         {/* --- Legal Links (centered across full width) --- */}
         <Stack
           direction="row"
@@ -64,6 +64,9 @@ export function Footer() {
           <a href="https://github.com/yag-im" target="_blank" rel="noopener noreferrer" className="text-black">
             GitHub
           </a>
+          <NextLink href="/status" className="text-black">
+            Status
+          </NextLink>
           <a href="https://www.buymeacoffee.com/yagim" target="_blank" rel="noopener noreferrer" className="text-black">
             Support Us
           </a>

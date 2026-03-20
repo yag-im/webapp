@@ -20,7 +20,7 @@ const UsageBar = styled(LinearProgress)<{ usage: number }>(({ usage }) => ({
     height: 16,
     borderRadius: 8,
     [`&.${linearProgressClasses.colorPrimary}`]: {
-        backgroundColor: 'rgba(255,255,255,0.08)',
+        backgroundColor: 'rgba(0,0,0,0.06)',
     },
     [`& .${linearProgressClasses.bar}`]: {
         borderRadius: 8,
@@ -51,7 +51,7 @@ export default function StatusPage() {
 
     return (
         <Box sx={{ maxWidth: 720, mx: 'auto', py: 4 }}>
-            <Typography variant="h4" gutterBottom>Clusters usage</Typography>
+            <Typography variant="h4" gutterBottom>Cluster usage</Typography>
 
             {loading && <Typography color="text.secondary">Loading...</Typography>}
             {error && <Typography color="error">{error}</Typography>}

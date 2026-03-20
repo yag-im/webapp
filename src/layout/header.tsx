@@ -45,8 +45,8 @@ export function Header() {
   const hintImg = LogoHint as StaticImageData;
 
   return (
-    <header>
-      <Grid container display="flex" alignItems="center" justifyContent="space-around" py={1}>
+    <header style={{ backgroundColor: '#ffffff' }}>
+      <Grid container display="flex" alignItems="center" justifyContent="space-around" py={1.5}>
         <Grid item display="flex" alignItems="center" justifyContent="flex-start" xs={8} pl={2}>
           <NextLink href="/">
             <LogoImage src={Logo} alt="YAG.IM Logo" />
@@ -79,7 +79,7 @@ export function Header() {
           </Box>
         </Grid>
       </Grid>
-      <Divider orientation="horizontal" flexItem />
+      <Divider orientation="horizontal" flexItem sx={{ borderColor: 'rgba(0,0,0,0.06)' }} />
       {showHint && hintPos && (
         <div
           style={{
