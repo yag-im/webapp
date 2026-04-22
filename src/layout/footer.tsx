@@ -6,7 +6,7 @@ import poweredByRetroArchLogo from '@/images/powered_by/RetroArch-logo.svg';
 import poweredByScummVmLogo from '@/images/powered_by/ScummVM-logo.svg';
 import poweredByWineLogo from '@/images/powered_by/WINE-logo.svg';
 import { NextLink } from '@/routing/next-link';
-import { Divider, Stack, Typography } from '@mui/material';
+import { Box, Divider, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 
 interface PoweredByImageProps {
@@ -29,12 +29,15 @@ const PoweredByImage = ({ src, alt, ...rest }: PoweredByImageProps) => {
 
 export function Footer() {
   return (
-    <footer
-      style={{
-        borderTop: '1px solid rgba(0,0,0,0.06)',
+    <Box
+      component="footer"
+      sx={{
+        borderTop: '1px solid',
+        borderColor: 'divider',
         position: 'sticky',
         bottom: 0,
-        backgroundColor: '#ffffff',
+        backgroundColor: 'background.paper',
+        color: 'text.primary',
         zIndex: 10,
         padding: '8px 0',
       }}
@@ -48,25 +51,25 @@ export function Footer() {
           divider={<Divider orientation="vertical" flexItem />}
           alignItems="center"
         >
-          <NextLink href="/legal/about-us" className="text-black">
+          <NextLink href="/legal/about-us">
             About Us
           </NextLink>
-          <NextLink href='/legal/privacy-policy' className="text-black">
+          <NextLink href='/legal/privacy-policy'>
             Privacy Policy
           </NextLink>
-          <NextLink href="/legal/dmca" className="text-black">
+          <NextLink href="/legal/dmca">
             DMCA Policy
           </NextLink>
-          <NextLink href="/legal/cookies" className="text-black">
+          <NextLink href="/legal/cookies">
             Cookies
           </NextLink>
-          <a href="https://github.com/yag-im" target="_blank" rel="noopener noreferrer" className="text-black">
+          <a href="https://github.com/yag-im" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>
-          <NextLink href="/status" className="text-black">
+          <NextLink href="/status">
             Status
           </NextLink>
-          <a href="https://www.buymeacoffee.com/yagim" target="_blank" rel="noopener noreferrer" className="text-black">
+          <a href="https://www.buymeacoffee.com/yagim" target="_blank" rel="noopener noreferrer">
             Support Us
           </a>
         </Stack>
@@ -110,7 +113,7 @@ export function Footer() {
       </div>
 
 
-    </footer>
+    </Box>
   );
 }
 

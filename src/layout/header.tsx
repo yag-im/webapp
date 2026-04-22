@@ -45,41 +45,44 @@ export function Header() {
   const hintImg = LogoHint as StaticImageData;
 
   return (
-    <header style={{ backgroundColor: '#ffffff' }}>
-      <Grid container display="flex" alignItems="center" justifyContent="space-around" py={1.5}>
-        <Grid item display="flex" alignItems="center" justifyContent="flex-start" xs={8} pl={2}>
-          <NextLink href="/">
-            <LogoImage src={Logo} alt="YAG.IM Logo" />
-          </NextLink>
-          <Box display="flex" flexDirection="column" ml={1.5}>
-            <NextLink href="/" className="text-black">
-              <Typography variant="h5">{APP_TITLE.toUpperCase()}</Typography>
+    <header>
+      <Box sx={{ backgroundColor: 'background.paper', color: 'text.primary' }}>
+        <Grid container display="flex" alignItems="center" justifyContent="space-around" py={1.5}>
+          <Grid item display="flex" alignItems="center" justifyContent="flex-start" xs={8} pl={2}>
+            <NextLink href="/">
+              <LogoImage src={Logo} alt="YAG.IM Logo" />
             </NextLink>
-            <NextLink href="/" className="text-black">
-              <Typography
-                variant="body2"
-                fontSize={12}
-                onMouseEnter={onHintEnter}
-                onMouseMove={onHintMove}
-                onMouseLeave={onHintLeave}
-                style={{ display: 'inline-block' }}
-              >
-                [iā´kнim]
-              </Typography>
-            </NextLink>
-          </Box>
+            <Box display="flex" flexDirection="column" ml={1.5}>
+              <NextLink href="/">
+                <Typography variant="h5" sx={{ color: 'text.primary' }}>{APP_TITLE.toUpperCase()}</Typography>
+              </NextLink>
+              <NextLink href="/">
+                <Typography
+                  variant="body2"
+                  fontSize={12}
+                  onMouseEnter={onHintEnter}
+                  onMouseMove={onHintMove}
+                  onMouseLeave={onHintLeave}
+                  style={{ display: 'inline-block' }}
+                  sx={{ color: 'text.primary' }}
+                >
+                  [iā´kнim]
+                </Typography>
+              </NextLink>
+            </Box>
+          </Grid>
+          <Grid item display="flex" justifyContent="flex-end" pr={2} xs={4}>
+            <Box
+              sx={{
+                display: 'block'
+              }}
+            >
+              <AccountSwitch />
+            </Box>
+          </Grid>
         </Grid>
-        <Grid item display="flex" justifyContent="flex-end" pr={2} xs={4}>
-          <Box
-            sx={{
-              display: 'block'
-            }}
-          >
-            <AccountSwitch />
-          </Box>
-        </Grid>
-      </Grid>
-      <Divider orientation="horizontal" flexItem sx={{ borderColor: 'rgba(0,0,0,0.06)' }} />
+        <Divider orientation="horizontal" flexItem />
+      </Box>
       {showHint && hintPos && (
         <div
           style={{

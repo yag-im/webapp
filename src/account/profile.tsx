@@ -1,6 +1,6 @@
 'use client'
 
-import { AccountCircleOutlined, AddTask, ChildFriendly, Feedback, Logout, Mail } from '@mui/icons-material';
+import { AccountCircleOutlined, AddTask, ChildFriendly, DarkMode, Feedback, LightMode, Logout, Mail } from '@mui/icons-material';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, ListSubheader, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -14,6 +14,7 @@ import { styled, useTheme } from '@mui/material/styles';
 import _ from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
+import { useColorMode } from '../theme-provider';
 import type { UserProfileProps } from './switch';
 
 type AgeMode = 'kid' | 'teen' | 'adult';
@@ -60,6 +61,7 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
   const [adultConfirmOpen, setAdultConfirmOpen] = React.useState(false);
   const updUserProfile = React.useRef<UserProfileProps | null>(null);
   const theme = useTheme();
+  const { mode: colorMode, setColorMode } = useColorMode();
 
   React.useEffect(() => {
     updUserProfile.current = structuredClone(userProfile);
@@ -184,6 +186,46 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
               <ToggleButton value="kid">Kid</ToggleButton>
               <ToggleButton value="teen">Teen</ToggleButton>
               <ToggleButton value="adult">Adult</ToggleButton>
+            </ToggleButtonGroup>
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem key='Appearance'>
+          <ListItemButton
+            disableRipple
+            sx={{
+              cursor: 'default',
+              '&:hover': { backgroundColor: 'transparent' },
+              '&:focus': { outline: 'none' },
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: 1,
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <ListItemIcon>
+                {colorMode === 'dark' ? <DarkMode /> : <LightMode />}
+              </ListItemIcon>
+              <ListItemText primary='Appearance' />
+            </Box>
+            <ToggleButtonGroup
+              value={colorMode}
+              exclusive
+              onChange={(_event, newMode) => {
+                if (newMode === 'light' || newMode === 'dark') {
+                  setColorMode(newMode);
+                }
+              }}
+              size="small"
+              fullWidth
+              sx={{ pl: 2 }}
+            >
+              <ToggleButton value="light">
+                <LightMode fontSize="small" sx={{ mr: 0.5 }} /> Light
+              </ToggleButton>
+              <ToggleButton value="dark">
+                <DarkMode fontSize="small" sx={{ mr: 0.5 }} /> Dark
+              </ToggleButton>
             </ToggleButtonGroup>
           </ListItemButton>
         </ListItem>
