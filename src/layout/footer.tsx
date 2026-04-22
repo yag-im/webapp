@@ -50,6 +50,16 @@ export function Footer() {
           flexWrap="wrap"
           divider={<Divider orientation="vertical" flexItem />}
           alignItems="center"
+          sx={{
+            '& a': {
+              color: 'text.primary',
+              textDecoration: 'none',
+              transition: 'color 0.15s ease',
+            },
+            '& a:hover': {
+              color: 'primary.main',
+            },
+          }}
         >
           <NextLink href="/legal/about-us">
             About Us
