@@ -36,7 +36,7 @@ export function CardTitle<T extends React.ElementType>({
   return (
     <As
       className={twMerge(
-        'title font-semibold',
+        'title font-semibold text-2xl md:text-3xl',
         // To make it work with `with-title` class of `nes-container`.
         'w-fit',
         // To disable bottom margin applied by `with-title` class of `nes-container`.

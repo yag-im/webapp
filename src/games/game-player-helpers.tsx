@@ -27,6 +27,7 @@ export interface UserProfileProps {
     email: string;
     name: string;
     tz: string;
+    apps_lib: string;
 }
 
 export async function getUserProfile() {

@@ -1,5 +1,6 @@
 'use client'
 
+import { useUpdateUserProfile, useUserProfile } from '@/account/user-profile-hooks';
 import { AccountCircleOutlined, AddTask, ChildFriendly, DarkMode, Feedback, LightMode, Logout, Mail } from '@mui/icons-material';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, ListSubheader, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -11,11 +12,9 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { styled, useTheme } from '@mui/material/styles';
-import _ from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
 import { useColorMode } from '../theme-provider';
-import type { UserProfileProps } from './switch';
 
 type AgeMode = 'kid' | 'teen' | 'adult';
 
@@ -50,26 +49,33 @@ const TruncatedListItemText = styled(ListItemText)(({ }) => ({
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
-export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor, userProfile: UserProfileProps }) {
+export default function ProfileDrawer({ anchor }: { anchor: Anchor }) {
+  const { data: userProfile } = useUserProfile();
+  const updateProfile = useUpdateUserProfile();
+  const theme = useTheme();
+  const { mode: colorMode, setColorMode } = useColorMode();
+
   const [state, setState] = React.useState({
     top: false,
     left: false,
     bottom: false,
     right: false,
   });
-  const [ageMode, setAgeMode] = React.useState<AgeMode>(getAgeMode(Date.parse(userProfile.dob)));
+  // Pending age-mode edit held locally until the drawer is closed, at which
+  // point we PATCH only the `dob` field so we never clobber `apps_lib` or
+  // other fields that may have been updated elsewhere.
+  const [pendingDob, setPendingDob] = React.useState<string | null>(null);
   const [adultConfirmOpen, setAdultConfirmOpen] = React.useState(false);
-  const updUserProfile = React.useRef<UserProfileProps | null>(null);
-  const theme = useTheme();
-  const { mode: colorMode, setColorMode } = useColorMode();
 
-  React.useEffect(() => {
-    updUserProfile.current = structuredClone(userProfile);
-  }, []);
+  if (!userProfile) {
+    return null;
+  }
+
+  const effectiveDob = pendingDob ?? userProfile.dob;
+  const ageMode = getAgeMode(Date.parse(effectiveDob));
 
   function applyAgeMode(mode: AgeMode) {
-    setAgeMode(mode);
-    if (updUserProfile.current) { updUserProfile.current.dob = ageModeToDate(mode); }
+    setPendingDob(ageModeToDate(mode));
   }
 
   function handleAgeModeChange(_event: React.MouseEvent<HTMLElement>, newMode: AgeMode | null) {
@@ -90,21 +96,6 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
     setAdultConfirmOpen(false);
   }
 
-  const updateUser = async (updatedUserProfile: UserProfileProps) => {
-    const response = await fetch("/api/accounts/user", {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedUserProfile),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update user profile');
-    }
-    return;
-  };
-
   const toggleDrawer =
     (anchor: Anchor, open: boolean) =>
       async (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -116,9 +107,18 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
           return;
         }
 
-        if (!open && updUserProfile.current && (!_.isEqual(updUserProfile.current, userProfile))) {
-          await updateUser(updUserProfile.current);
-          if (getAgeMode(Date.parse(updUserProfile.current.dob)) !== getAgeMode(Date.parse(userProfile.dob))) { window.location.reload(); }
+        if (!open && pendingDob && userProfile && pendingDob !== userProfile.dob) {
+          const previousMode = getAgeMode(Date.parse(userProfile.dob));
+          const newMode = getAgeMode(Date.parse(pendingDob));
+          try {
+            await updateProfile.mutateAsync({ dob: pendingDob });
+            if (previousMode !== newMode) {
+              window.location.reload();
+              return;
+            }
+          } finally {
+            setPendingDob(null);
+          }
         }
 
         setState({ ...state, [anchor]: open });
@@ -139,7 +139,6 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
 
       <List>
         <ListSubheader>Profile</ListSubheader>
-
 
         <ListItem key='UserEmail' >
           <ListItemButton
@@ -243,8 +242,7 @@ export default function ProfileDrawer({ anchor, userProfile }: { anchor: Anchor,
           </ListItemButton>
         </ListItem>
 
-        <ListItem key='New Game Request'
-        >
+        <ListItem key='New Game Request'>
           <ListItemButton href="https://discord.gg/jm3vgPc6dF" target="_blank">
             <ListItemIcon>
               <AddTask />

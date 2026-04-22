@@ -2,6 +2,7 @@
 
 import AccountSwitch from '@/account/switch';
 import { APP_TITLE } from '@/common/common-utils';
+import { MyStuffHeaderLink } from '@/my-stuff/my-stuff-header-link';
 import { NextLink } from '@/routing/next-link';
 import { Box, Divider, Grid, Typography } from '@mui/material';
 import Image, { type StaticImageData } from 'next/image';
@@ -71,7 +72,8 @@ export function Header() {
               </NextLink>
             </Box>
           </Grid>
-          <Grid item display="flex" justifyContent="flex-end" pr={2} xs={4}>
+          <Grid item display="flex" justifyContent="flex-end" alignItems="center" pr={2} xs={4}>
+            <MyStuffHeaderLink />
             <Box
               sx={{
                 display: 'block'

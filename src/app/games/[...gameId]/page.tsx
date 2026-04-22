@@ -1,4 +1,5 @@
 import { CDN_URL } from '@/common/common-utils';
+import { FavoriteButton } from '@/games/favorite-button';
 import { GameDetails } from '@/games/game-details';
 import { getGameDetails } from '@/games/game-details-query';
 import { GamePlayer } from '@/games/game-player';
@@ -159,6 +160,9 @@ export default async function GamePage({
           </div>
 
         </Paper>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+          <FavoriteButton releaseId={gameId[0]} />
+        </Box>
       </Grid>
       <Grid item xs={12} sm={10} md={5} >
         <Typography variant='h7' paragraph>Details</Typography>
