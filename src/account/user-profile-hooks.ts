@@ -1,9 +1,31 @@
 'use client';
 
 import type { UserProfileProps } from '@/games/game-player-helpers';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 export const USER_QUERY_KEY = ['user'] as const;
+
+const USER_PROFILE_CHANNEL = 'user-profile-sync';
+
+type UserProfileBroadcastMessage =
+    | { type: 'updated'; profile: UserProfileProps };
+
+function getBroadcastChannel(): BroadcastChannel | null {
+    if (typeof window === 'undefined') return null;
+    if (typeof BroadcastChannel === 'undefined') return null;
+    return new BroadcastChannel(USER_PROFILE_CHANNEL);
+}
+
+function broadcastProfileUpdate(message: UserProfileBroadcastMessage) {
+    const channel = getBroadcastChannel();
+    if (!channel) return;
+    try {
+        channel.postMessage(message);
+    } finally {
+        channel.close();
+    }
+}
 
 export type AppsLib = {
     favorite_games?: string[];
@@ -74,11 +96,14 @@ export function useUpdateUserProfile() {
             }
         },
         onSuccess: (serverProfile, patch) => {
-            queryClient.setQueryData<UserProfileProps | null>(USER_QUERY_KEY, (prev) => {
+            const next = queryClient.setQueryData<UserProfileProps | null>(USER_QUERY_KEY, (prev) => {
                 if (serverProfile) return serverProfile;
                 if (!prev) return prev;
                 return { ...prev, ...patch } as UserProfileProps;
             });
+            if (next) {
+                broadcastProfileUpdate({ type: 'updated', profile: next });
+            }
         },
     });
 }
@@ -114,4 +139,36 @@ export function useToggleFavorite() {
             void queryClient.invalidateQueries({ queryKey: ['my-stuff'] });
         },
     });
+}
+
+/**
+ * Subscribe the current tab's react-query cache to profile updates
+ * broadcast by other tabs via BroadcastChannel. Mount once near the
+ * root of the client tree.
+ */
+export function useUserProfileTabSync() {
+    const queryClient = useQueryClient();
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        if (typeof BroadcastChannel === 'undefined') return;
+
+        const channel = new BroadcastChannel(USER_PROFILE_CHANNEL);
+        const onMessage = (event: MessageEvent<UserProfileBroadcastMessage>) => {
+            applyProfileBroadcast(queryClient, event.data);
+        };
+        channel.addEventListener('message', onMessage);
+        return () => {
+            channel.removeEventListener('message', onMessage);
+            channel.close();
+        };
+    }, [queryClient]);
+}
+
+function applyProfileBroadcast(
+    queryClient: QueryClient,
+    message: UserProfileBroadcastMessage | undefined,
+) {
+    if (!message) return;
+    queryClient.setQueryData<UserProfileProps | null>(USER_QUERY_KEY, message.profile);
+    void queryClient.invalidateQueries({ queryKey: ['my-stuff'] });
 }
