@@ -92,6 +92,9 @@ export function Footer() {
           sx={{
             display: { xs: 'none', lg: 'flex' },
             flexShrink: 0,
+            'html[data-theme="dark"] & img': {
+              filter: 'invert(1) hue-rotate(180deg)',
+            },
           }}
         >
           <Typography

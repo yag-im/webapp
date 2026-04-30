@@ -107,6 +107,12 @@ export function GameDetails(gameDetails: GameReleaseDetailsProps) {
     router.push(url);
   };
 
+  const handleLangClick = (lang?: string) => {
+    if (!lang) return;
+    const url = `/games?lang=${encodeURIComponent(lang)}`;
+    router.push(url);
+  };
+
   const gameDetailsList = [
     {
       key: "Publisher", value: publisherName ? (
@@ -123,7 +129,19 @@ export function GameDetails(gameDetails: GameReleaseDetailsProps) {
     },
     { key: "Year released", value: gameDetails.year_released },
     { key: "Media", value: gameDetails.distro.format },
-    { key: "Language", value: gameDetails.lang },
+    {
+      key: "Language", value: gameDetails.lang ? (
+        <Link
+          component="button"
+          variant="body1"
+          onClick={() => handleLangClick(gameDetails.lang)}
+          underline="hover"
+          sx={{ padding: 0, minWidth: 0 }}
+        >
+          {gameDetails.lang}
+        </Link>
+      ) : <Typography>{detailsValueFallbackText}</Typography>
+    },
     { key: "Platform", value: gameDetails.platform.slug },
     { key: "Runner", value: gameDetails.runner.name }
   ];

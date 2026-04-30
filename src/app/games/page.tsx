@@ -25,16 +25,17 @@ type GamesPageProps = {
     keyword?: string;
     orderBy?: OrderBy;
     publisher?: string;
+    lang?: string;
   };
 };
 
 export default async function GamesPage({
-  searchParams: { keyword, orderBy, publisher },
+  searchParams: { keyword, orderBy, publisher, lang },
 }: GamesPageProps) {
   const queryClient = getQueryClient();
 
   await queryClient.prefetchInfiniteQuery(
-    gameInfiniteListQueryOptions({ keyword: keyword ?? null, orderBy: orderBy ?? null, publisher: publisher ?? null }),
+    gameInfiniteListQueryOptions({ keyword: keyword ?? null, orderBy: orderBy ?? null, publisher: publisher ?? null, lang: lang ?? null }),
   );
 
   return (

@@ -22,9 +22,11 @@ export function GameSearchForm() {
         ? new URLSearchParams(window.location.search)
         : new URLSearchParams(Array.from(searchParams.entries()));
       params.set('keyword', keyword);
-      // ensure publisher (if present) is preserved
+      // ensure publisher and lang (if present) are preserved
       const pub = searchParams.get('publisher');
       if (pub) params.set('publisher', pub);
+      const lang = searchParams.get('lang');
+      if (lang) params.set('lang', lang);
       router.push(createUrl('/games', params));
     }
   };
@@ -37,6 +39,8 @@ export function GameSearchForm() {
     params.set('orderBy', orderBy);
     const pub = searchParams.get('publisher');
     if (pub) params.set('publisher', pub);
+    const lang = searchParams.get('lang');
+    if (lang) params.set('lang', lang);
     router.push(createUrl('/games', params));
   };
 

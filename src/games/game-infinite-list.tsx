@@ -13,9 +13,10 @@ export function GameInfiniteList() {
   const searchParams = useSearchParams();
   const keyword = searchParams.get('keyword');
   const publisher = searchParams.get('publisher');
+  const lang = searchParams.get('lang');
   const orderBy = searchParams.get('orderBy') as OrderBy;
   const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQuery(
-    gameInfiniteListQueryOptions({ keyword, orderBy, publisher }),
+    gameInfiniteListQueryOptions({ keyword, orderBy, publisher, lang }),
   );
 
   return (
