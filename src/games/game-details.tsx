@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 type MediaAssets = {
-  cover: { image_id: string };
+  cover: { image_id: string } | null;
   screenshots: { height: number; image_id: string; width: number }[];
 };
 

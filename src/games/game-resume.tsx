@@ -35,7 +35,8 @@ export default function ResumeGameDialog(props: ResumeGameDialogProps) {
         onCloseGame();
     };
 
-    const coverImageUrl = `${CDN_URL}/covers/${gameDetails.media_assets.cover.image_id}.jpg`;
+    const coverImageId = gameDetails.media_assets_localized?.cover?.image_id ?? gameDetails.media_assets.cover?.image_id;
+    const coverImageUrl = coverImageId ? `${CDN_URL}/covers/${coverImageId}.jpg` : null;
 
     return (
         <Dialog
@@ -50,12 +51,12 @@ export default function ResumeGameDialog(props: ResumeGameDialogProps) {
             <Divider />
             <DialogContent>
                 <Stack direction="row" spacing={1}>
-                    <CardMedia
+                    {coverImageUrl && <CardMedia
                         component="img"
                         src={coverImageUrl}
                         alt="Cover Image"
                         sx={{ width: '96px', height: '100%' }} // Adjust styling as needed
-                    />
+                    />}
                     <DialogContentText id="alert-dialog-description">
                         This happens when game screen is closed or left open without exiting the game. Would you like to resume playing it? < br /> < br /> < br /> Clicking <b>&quot;Close&quot;</b> means all unsaved progress will be lost.
                     </DialogContentText>

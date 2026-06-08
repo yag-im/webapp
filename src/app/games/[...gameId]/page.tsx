@@ -58,7 +58,7 @@ export async function generateMetadata({
   if (gameDetails == null) {
     notFound();
   }
-  const cover_image_id = gameDetails.media_assets_localized?.cover.image_id ?? gameDetails.media_assets.cover.image_id;
+  const cover_image_id = gameDetails.media_assets_localized?.cover?.image_id ?? gameDetails.media_assets.cover?.image_id;
 
   return getMetadata({
     title: gameDetails.name,
@@ -103,7 +103,7 @@ export default async function GamePage({
     notFound();
   }
   const screenshots = gameDetails.media_assets_localized?.screenshots.length ? gameDetails.media_assets_localized.screenshots : gameDetails.media_assets.screenshots;
-  const cover_image_id = gameDetails.media_assets_localized?.cover.image_id ?? gameDetails.media_assets.cover.image_id;
+  const cover_image_id = gameDetails.media_assets_localized?.cover?.image_id ?? gameDetails.media_assets.cover?.image_id;
 
   return (
     <Grid container xs={12} spacing={3}>
