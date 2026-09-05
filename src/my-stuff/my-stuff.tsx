@@ -1,9 +1,11 @@
 'use client';
 
+import { analytics } from '@/analytics/track';
 import { GameReleaseCard, type GameReleaseCardProps } from '@/games/game-card';
 import { GameList } from '@/games/game-list';
 import { Box, Typography } from '@mui/material';
 import { useQueries } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { fetchMyStuff } from './my-stuff-query';
 
 function Section({ title, games }: { title: string; games: GameReleaseCardProps[] }) {
@@ -43,6 +45,19 @@ export function MyStuff() {
         ],
     });
 
+    const favorites = favoritesQuery.data ?? [];
+    const recentlyPlayed = recentlyPlayedQuery.data ?? [];
+    const dataReady = !favoritesQuery.isLoading && !recentlyPlayedQuery.isLoading
+        && !favoritesQuery.isError && !recentlyPlayedQuery.isError;
+
+    useEffect(() => {
+        if (!dataReady) return;
+        analytics.myStuffView({
+            favorites_count: favorites.length,
+            recently_played_count: recentlyPlayed.length,
+        });
+    }, [dataReady, favorites.length, recentlyPlayed.length]);
+
     if (favoritesQuery.isLoading || recentlyPlayedQuery.isLoading) {
         return <Typography>Loading...</Typography>;
     }
@@ -52,8 +67,8 @@ export function MyStuff() {
 
     return (
         <>
-            <Section title="Favorites" games={favoritesQuery.data ?? []} />
-            <Section title="Recently played" games={recentlyPlayedQuery.data ?? []} />
+            <Section title="Favorites" games={favorites} />
+            <Section title="Recently played" games={recentlyPlayed} />
         </>
     );
 }

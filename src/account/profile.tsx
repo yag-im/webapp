@@ -1,6 +1,7 @@
 'use client'
 
 import { useUpdateUserProfile, useUserProfile } from '@/account/user-profile-hooks';
+import { analytics } from '@/analytics/track';
 import { AccountCircleOutlined, AddTask, ChildFriendly, DarkMode, Feedback, LightMode, Logout, Mail } from '@mui/icons-material';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, ListSubheader, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -256,7 +257,8 @@ export default function ProfileDrawer({ anchor }: { anchor: Anchor }) {
         <ListItem key='Sign out'>
           <ListItemButton
             component="a"
-            href="/auth/logout">
+            href="/auth/logout"
+            onClick={() => analytics.signOut()}>
             <ListItemIcon>
               <Logout />
             </ListItemIcon>

@@ -1,8 +1,10 @@
 'use client';
 
+import { analytics } from '@/analytics/track';
 import { Grid, Link, Typography } from "@mui/material";
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 type MediaAssets = {
   cover: { image_id: string } | null;
@@ -79,6 +81,15 @@ const esrbRatingImages: { [key: string]: string } = {
 };
 
 export function GameDetails(gameDetails: GameReleaseDetailsProps) {
+
+  useEffect(() => {
+    analytics.viewItem({
+      item_id: gameDetails.uuid,
+      item_name: gameDetails.name,
+      platform: gameDetails.platform.slug,
+      year: gameDetails.year_released,
+    });
+  }, [gameDetails.uuid, gameDetails.name, gameDetails.platform.slug, gameDetails.year_released]);
 
   const getEsrbDisplay = (rating?: number) => {
     if (!rating) {

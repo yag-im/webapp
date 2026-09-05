@@ -2,6 +2,7 @@
 
 'use client';
 
+import { analytics } from '@/analytics/track';
 import { CDN_URL } from '@/common/common-utils';
 import { NextLink } from '@/routing/next-link';
 import { Box, CardActionArea } from '@mui/material';
@@ -72,6 +73,12 @@ export function GameReleaseCard(game: GameReleaseCardProps) {
   return (
     <NextLink href={`/games/${game.id}/${game.slug}`}>
       <Card
+        onClick={() => analytics.selectItem({
+          item_id: String(game.id),
+          item_name: game.name,
+          item_list_name: 'games_grid',
+          platform: game.platform,
+        })}
         sx={{
           // maxWidth: 345, - messes up the card width at xs size
           display: 'flex',

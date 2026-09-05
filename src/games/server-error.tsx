@@ -1,3 +1,4 @@
+import { analytics } from '@/analytics/track';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -15,6 +16,10 @@ export default function ServerErrorDialog(props: ServerErrorDialogProps) {
     const [open, setOpen] = React.useState(true);
 
     const { onClose, disablePortal = false } = props;
+
+    React.useEffect(() => {
+        analytics.exception({ description: 'server_unavailable_1409', fatal: false });
+    }, []);
 
     const handleClose = () => {
         onClose();

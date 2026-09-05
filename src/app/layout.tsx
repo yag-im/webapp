@@ -20,7 +20,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </BaseQueryClientProvider>
           </ColorModeProvider>
         </AppRouterCacheProvider>
-        <GoogleAnalytics gaId={GA_ID} />
+        {/^G-/i.test(GA_ID) && <GoogleAnalytics gaId={GA_ID} />}
       </body>
     </html>
   );

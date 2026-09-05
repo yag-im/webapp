@@ -1,6 +1,7 @@
 'use client';
 
 import { parseAppsLib, useToggleFavorite, useUserProfile } from '@/account/user-profile-hooks';
+import { analytics } from '@/analytics/track';
 import { Star, StarBorder } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { useMemo } from 'react';
@@ -19,11 +20,20 @@ export function FavoriteButton({ releaseId }: { releaseId: string }) {
         return null;
     }
 
+    const handleClick = () => {
+        if (isFavorite) {
+            analytics.favoriteRemove({ item_id: releaseId });
+        } else {
+            analytics.favoriteAdd({ item_id: releaseId });
+        }
+        toggleFavorite.mutate(releaseId);
+    };
+
     return (
         <Tooltip title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}>
             <span>
                 <IconButton
-                    onClick={() => toggleFavorite.mutate(releaseId)}
+                    onClick={handleClick}
                     disabled={toggleFavorite.isPending}
                     aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                     sx={{ color: isFavorite ? 'warning.main' : 'text.secondary' }}

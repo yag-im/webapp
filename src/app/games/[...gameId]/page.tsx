@@ -1,8 +1,10 @@
 import { CDN_URL } from '@/common/common-utils';
+import { OutboundClickTracker } from '@/common/outbound-click-tracker';
 import { FavoriteButton } from '@/games/favorite-button';
 import { GameDetails } from '@/games/game-details';
 import { getGameDetails } from '@/games/game-details-query';
 import { GamePlayer } from '@/games/game-player';
+import { RefLink } from '@/games/ref-link';
 import ScreenshotGallery from '@/games/screenshot-gallery';
 import { NextLink } from '@/routing/next-link';
 import { getMetadata } from '@/seo/seo-utils';
@@ -75,23 +77,6 @@ export async function generateMetadata({
         : [],
   });
 }
-
-interface RefLinkProps {
-  url: string;
-  alt: string;
-  src: string;
-  ref_id?: string;
-}
-
-const RefLink = ({ url, alt, src, ref_id }: RefLinkProps) => {
-  return ref_id ? (
-    <Box>
-      <a href={`${url}${ref_id}`} target="_blank">
-        <Image alt={alt} src={src} width={24} height={24} />
-      </a>
-    </Box>
-  ) : null;
-};
 
 export default async function GamePage({
   params: { gameId },
@@ -179,42 +164,54 @@ export default async function GamePage({
             alt="AdventureGamers"
             src="/images/outbound-logos/adventure_gamers.png"
             ref_id={gameDetails.refs.ag_id}
+            itemId={gameDetails.uuid}
           />
           <RefLink
             url="https://lutris.net/games/"
             alt="Lutris"
             src="/images/outbound-logos/lutris.png"
             ref_id={gameDetails.refs.lutris_id}
+            itemId={gameDetails.uuid}
           />
           <RefLink
             url="https://www.igdb.com/games/"
             alt="IGDB"
             src="/images/outbound-logos/igdb.png"
             ref_id={gameDetails.igdb.slug}
+            itemId={gameDetails.uuid}
           />
           <RefLink
             url="https://www.mobygames.com/game/"
             alt="MobyGames"
             src="/images/outbound-logos/moby_games.png"
             ref_id={gameDetails.refs.mg_id}
+            itemId={gameDetails.uuid}
           />
           <RefLink
             url="https://www.pcgamingwiki.com/wiki/"
             alt="PCGamingWiki"
             src="/images/outbound-logos/pc_gaming_wiki.png"
             ref_id={gameDetails.refs.pcgw_id}
+            itemId={gameDetails.uuid}
           />
           <RefLink
             url="https://questzone.ru/enzi/game/"
             alt="QuestZone"
             src="/images/outbound-logos/questzone_ru.png"
             ref_id={gameDetails.refs.qz_id}
+            itemId={gameDetails.uuid}
           />
           {gameDetails.distro.url === 'exoscummvm' && (
             <Box>
-              <a href="https://www.retro-exo.com/scummvm.html" target="_blank">
-                <Image alt="eXoScummVM" src="/images/outbound-logos/exodos.ico" width={24} height={24} />
-              </a>
+              <OutboundClickTracker
+                url="https://www.retro-exo.com/scummvm.html"
+                label="eXoScummVM"
+                itemId={gameDetails.uuid}
+              >
+                <a href="https://www.retro-exo.com/scummvm.html" target="_blank" rel="noreferrer noopener">
+                  <Image alt="eXoScummVM" src="/images/outbound-logos/exodos.ico" width={24} height={24} />
+                </a>
+              </OutboundClickTracker>
             </Box>
           )}
         </Stack>
@@ -222,7 +219,7 @@ export default async function GamePage({
       <Grid item xs={12} sm={12} md={9}>
         <Typography variant="h7" paragraph>Description</Typography>
         <Typography variant="body1" paragraph>{gameDetails.short_descr}</Typography>
-        {screenshots && screenshots.length > 0 && <ScreenshotGallery screenshots={screenshots} />}
+        {screenshots && screenshots.length > 0 && <ScreenshotGallery screenshots={screenshots} itemId={gameDetails.uuid} />}
       </Grid>
       <Grid item xs={9} sm={6} md={3}>
         <Card sx={{
@@ -241,11 +238,17 @@ export default async function GamePage({
           >
             <Typography gutterBottom variant='h6'>{feedbackCardContent.title}</Typography>
             <Typography paragraph align='center' dangerouslySetInnerHTML={{ __html: feedbackCardContent.description }} />
-            <Button
-              href={feedbackCardContent.button.href}
-              target='_blank'
-              variant='outlined'
-            >{feedbackCardContent.button.text}</Button>
+            <OutboundClickTracker
+              url={feedbackCardContent.button.href}
+              label={`feedback:${feedbackCardContent.title}`}
+              itemId={gameDetails.uuid}
+            >
+              <Button
+                href={feedbackCardContent.button.href}
+                target='_blank'
+                variant='outlined'
+              >{feedbackCardContent.button.text}</Button>
+            </OutboundClickTracker>
           </CardContent>
         </Card>
       </Grid>

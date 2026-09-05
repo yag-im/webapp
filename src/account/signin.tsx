@@ -1,5 +1,6 @@
 'use client'
 
+import { analytics } from "@/analytics/track";
 import DiscordLogo from "@/images/logos/discord.svg";
 import GoogleLogo from "@/images/logos/google.svg";
 import RedditLogo from "@/images/logos/reddit.svg";
@@ -25,6 +26,7 @@ const SignInListItem = ({ alt, href, src, text, ...rest }: SignInListItemProps) 
     return (
         <Button
             href={href}
+            onClick={() => analytics.login(alt)}
             style={{
                 borderRadius: 12,
                 fontSize: 15

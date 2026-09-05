@@ -1,3 +1,4 @@
+import { analytics } from '@/analytics/track';
 import { CDN_URL } from '@/common/common-utils';
 import { CardMedia, Divider, Stack } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -21,16 +22,33 @@ export default function ResumeGameDialog(props: ResumeGameDialogProps) {
 
     const { orphanedGameDetails: gameDetails, onResumeGame, onCloseGame, disablePortal = false } = props;
 
+    React.useEffect(() => {
+        analytics.gameResumeShown({
+            item_id: gameDetails.uuid,
+            item_name: gameDetails.name,
+        });
+    }, [gameDetails.uuid, gameDetails.name]);
+
     const handleClose = () => {
         setOpen(false);
     };
 
     const handleResumeGame = () => {
+        analytics.gameResumeAction({
+            item_id: gameDetails.uuid,
+            item_name: gameDetails.name,
+            action: 'resume',
+        });
         handleClose();
         onResumeGame();
     };
 
     const handleCloseGame = () => {
+        analytics.gameResumeAction({
+            item_id: gameDetails.uuid,
+            item_name: gameDetails.name,
+            action: 'close_and_start_new',
+        });
         handleClose();
         onCloseGame();
     };

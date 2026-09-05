@@ -1,23 +1,31 @@
 'use client';
 
+import { analytics } from '@/analytics/track';
 import { createUrl } from '@/routing/routing-utils';
 import { Box, Grid } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useRef } from 'react';
 import { OrderBy } from './types';
 
 const MIN_CHARS_SEARCH = 2
+const SEARCH_TRACK_DEBOUNCE_MS = 800
 
 export function GameSearchForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const keyword = searchParams.get('keyword') ?? '';
   const orderBy = searchParams.get('orderBy') ?? '';
+  const searchTrackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleSearchChange = (event: { target: { value: string; }; }) => {
     const keyword = event.target.value;
     if (keyword.length >= MIN_CHARS_SEARCH || keyword.length === 0) {
+      if (keyword.length >= MIN_CHARS_SEARCH) {
+        if (searchTrackTimer.current) clearTimeout(searchTrackTimer.current);
+        searchTrackTimer.current = setTimeout(() => analytics.search(keyword), SEARCH_TRACK_DEBOUNCE_MS);
+      }
       const params = typeof window !== 'undefined'
         ? new URLSearchParams(window.location.search)
         : new URLSearchParams(Array.from(searchParams.entries()));

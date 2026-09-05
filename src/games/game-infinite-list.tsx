@@ -1,5 +1,6 @@
 'use client';
 
+import { analytics } from '@/analytics/track';
 import { InfiniteScrollSentry } from '@/common/infinite-scroll-sentry';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
@@ -18,6 +19,12 @@ export function GameInfiniteList() {
   const { data, isFetching, hasNextPage, fetchNextPage } = useInfiniteQuery(
     gameInfiniteListQueryOptions({ keyword, orderBy, publisher, lang }),
   );
+
+  const listName = keyword ? 'search_results' : 'games_catalog';
+  const handleLoadMore = () => {
+    analytics.gameListScroll({ list_name: listName, page: (data?.pages.length ?? 0) + 1 });
+    return fetchNextPage();
+  };
 
   return (
     <>
@@ -45,7 +52,7 @@ export function GameInfiniteList() {
       <InfiniteScrollSentry
         loading={isFetching}
         hasNextPage={hasNextPage}
-        onLoadMore={fetchNextPage}
+        onLoadMore={handleLoadMore}
       />
     </>
   );

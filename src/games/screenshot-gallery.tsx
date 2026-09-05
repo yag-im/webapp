@@ -1,5 +1,6 @@
 "use client";
 
+import { analytics } from '@/analytics/track';
 import { CDN_URL } from '@/common/common-utils';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -14,9 +15,10 @@ type Screenshot = {
 type Props = {
     screenshots?: Screenshot[] | null;
     columns?: number;
+    itemId?: string;
 };
 
-export default function ScreenshotGallery({ screenshots = [], columns = 5 }: Props) {
+export default function ScreenshotGallery({ screenshots = [], columns = 5, itemId }: Props) {
     const [open, setOpen] = useState(false);
     const [index, setIndex] = useState(0);
 
@@ -24,21 +26,30 @@ export default function ScreenshotGallery({ screenshots = [], columns = 5 }: Pro
     const screenshotsArr = screenshots ?? [];
 
     const openAt = useCallback((i: number) => {
+        analytics.screenshotView({ item_id: itemId, index: i, count, action: 'open' });
         setIndex(i);
         setOpen(true);
-    }, []);
+    }, [count, itemId]);
 
     const close = useCallback(() => setOpen(false), []);
 
     const prev = useCallback((e?: React.SyntheticEvent) => {
         e?.stopPropagation();
-        setIndex((i) => (count ? (i - 1 + count) % count : 0));
-    }, [count]);
+        setIndex((i) => {
+            const next = count ? (i - 1 + count) % count : 0;
+            analytics.screenshotView({ item_id: itemId, index: next, count, action: 'prev' });
+            return next;
+        });
+    }, [count, itemId]);
 
     const next = useCallback((e?: React.SyntheticEvent) => {
         e?.stopPropagation();
-        setIndex((i) => (count ? (i + 1) % count : 0));
-    }, [count]);
+        setIndex((i) => {
+            const nextIndex = count ? (i + 1) % count : 0;
+            analytics.screenshotView({ item_id: itemId, index: nextIndex, count, action: 'next' });
+            return nextIndex;
+        });
+    }, [count, itemId]);
 
     if (count === 0) return null;
 

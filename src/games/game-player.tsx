@@ -1,6 +1,7 @@
 'use client';
 
 import { SignInDialog } from "@/account/signin";
+import { analytics } from "@/analytics/track";
 import GstWebRTCAPI from "@/webrtc/gstwebrtc-api";
 import { PlayArrow } from '@mui/icons-material';
 import { Box, Button, Typography } from "@mui/material";
@@ -52,6 +53,19 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
   const activeSessionId = useRef<string | null>(null);
   const nextUrl = useRef<string | null>(null);
   const serverErrorOccurred = useRef(false);
+  const launchStartAt = useRef<number | null>(null);
+  const sessionStartAt = useRef<number | null>(null);
+  const isResumeLaunch = useRef<boolean>(false);
+  const launchSucceededFor = useRef<string | null>(null);
+  const exitReason = useRef<'user' | 'error' | 'idle' | 'network' | 'unknown'>('unknown');
+  const inputFirstInteractionSent = useRef<boolean>(false);
+  const gamepadConnectedSent = useRef<boolean>(false);
+
+  const analyticsItem = () => ({
+    item_id: gameDetails.uuid,
+    item_name: gameDetails.name,
+    platform: gameDetails.platform?.slug,
+  });
 
   function createSessionWrap(appReleaseUuid: string) {
     // initiate new session creation (async);
@@ -149,6 +163,13 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
     const listener = {
       onError(errEvent: { error: { message: string; code?: number }; }) {
         console.error(`[GamePlayer] webRtcApi listener catched an error: ${errEvent.error.message}`);
+        analytics.gameLaunchFailed({
+          ...analyticsItem(),
+          error_code: errEvent.error.code,
+          error_stage: 'signaling',
+          description: errEvent.error.message,
+        });
+        exitReason.current = 'error';
         if (errEvent.error.code === 1409) {
           console.error(`[GamePlayer] server error 1409: service unavailable`);
           serverErrorOccurred.current = true;
@@ -199,6 +220,15 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
 
           session.addEventListener("closed", async () => {
             console.log(`[GamePlayer] entering 'session closed' callback (session id: ${session._sessionId}`);
+            if (sessionStartAt.current !== null) {
+              analytics.gameSessionEnd({
+                ...analyticsItem(),
+                duration_sec: Math.round((Date.now() - sessionStartAt.current) / 1000),
+                exit_reason: exitReason.current,
+              });
+              sessionStartAt.current = null;
+              exitReason.current = 'unknown';
+            }
             activeSessionId.current = null;
             if (!videoElementRef.current) {
               console.error("[GamePlayer] videoElement is null")
@@ -214,6 +244,15 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
             if (videoElementRef.current) {
               const { streams } = session;
               if (streams.length > 0) {
+                if (launchSucceededFor.current !== session._sessionId && launchStartAt.current !== null) {
+                  analytics.gameLaunchSuccess({
+                    ...analyticsItem(),
+                    time_to_first_frame_ms: Date.now() - launchStartAt.current,
+                  });
+                  launchSucceededFor.current = session._sessionId;
+                  sessionStartAt.current = Date.now();
+                  inputFirstInteractionSent.current = false;
+                }
                 videoElementRef.current.srcObject = streams[0];
                 videoElementRef.current.play().catch(error => {
                   console.error('[GamePlayer] error while playing video:', error);
@@ -300,6 +339,9 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
       setShowSignInDialog(true);
       return;
     }
+    launchStartAt.current = Date.now();
+    isResumeLaunch.current = false;
+    analytics.gameLaunchStart({ ...analyticsItem(), is_resume: false });
     // initiate sigsvc connection (make sure user is authenticated at this point!)
     await initWebRtcConn();
     // check for pending/active/paused sessions (see sessionsList cb)
@@ -330,6 +372,39 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
       //await playGame();
     }
   }, []);
+
+  useEffect(() => {
+    // Track first user input against the streamed game and gamepad connections (once per game load).
+    const sendFirstInput = (type: 'mouse' | 'keyboard' | 'gamepad') => {
+      if (inputFirstInteractionSent.current) return;
+      if (sessionStartAt.current === null) return;
+      inputFirstInteractionSent.current = true;
+      analytics.inputFirstInteraction({
+        item_id: gameDetails.uuid,
+        input_type: type,
+        latency_ms: Date.now() - sessionStartAt.current,
+      });
+    };
+
+    const onClick = () => sendFirstInput('mouse');
+    const onKey = () => sendFirstInput('keyboard');
+    const onGamepad = (e: GamepadEvent) => {
+      sendFirstInput('gamepad');
+      if (gamepadConnectedSent.current) return;
+      gamepadConnectedSent.current = true;
+      analytics.gamepadConnected({ id: e.gamepad.id, mapping: e.gamepad.mapping });
+    };
+
+    const video = videoElementRef.current;
+    video?.addEventListener('click', onClick);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('gamepadconnected', onGamepad);
+    return () => {
+      video?.removeEventListener('click', onClick);
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('gamepadconnected', onGamepad);
+    };
+  }, [gameDetails.uuid]);
 
   return (
     <div
@@ -405,6 +480,9 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
             console.log("[GamePlayer] ResumeGameDialog: resume game");
             setShowResumeGameDialog(false);
             requestFullscreenWrap();
+            launchStartAt.current = Date.now();
+            isResumeLaunch.current = true;
+            analytics.gameLaunchStart({ ...analyticsItem(), is_resume: true });
             restoreOrphanedSession();
           }}
           onCloseGame={function (): void {
@@ -432,6 +510,7 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
             console.log("[GamePlayer] ExitGameDialog: close game session");
             setShowExitGameDialog(false);
             if (activeSessionId.current) {
+              exitReason.current = 'user';
               endSessionWrap(activeSessionId.current);
             } else {
               console.error("[GamePlayer] invalid state: no active session");
@@ -441,6 +520,7 @@ export function GamePlayer(gameDetails: GameReleaseDetailsProps) {
       {showSafariWarningDialog &&
         <SafariWarningDialog
           disablePortal={isFullScreen()} // otherwise dialog is not visible in the fullscreen mode
+          itemId={gameDetails.uuid}
           onExit={function (): void {
             // exit game
             console.log("[GamePlayer] SafariWarningDialog: exit game");
