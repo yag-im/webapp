@@ -1,3 +1,5 @@
+'use client';
+
 import poweredByDosBoxLogo from '@/images/powered_by/dosbox-logo.svg';
 import poweredByDosBoxXLogo from '@/images/powered_by/dosbox-x-logo.svg';
 import poweredByIgdbLogo from '@/images/powered_by/IGDB-logo.svg';
@@ -8,6 +10,7 @@ import poweredByWineLogo from '@/images/powered_by/WINE-logo.svg';
 import { NextLink } from '@/routing/next-link';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
+import { useEffect, useRef } from 'react';
 
 interface PoweredByImageProps {
   src: string;
@@ -28,17 +31,43 @@ const PoweredByImage = ({ src, alt, ...rest }: PoweredByImageProps) => {
 };
 
 export function Footer() {
+  const footerRef = useRef<HTMLElement>(null);
+
+  // The footer is pinned to the viewport so it stays visible even on pages with
+  // infinite scroll (where there is no reachable "bottom of document"). We publish
+  // its measured height as a CSS variable so the main content can reserve exactly
+  // that much space and never render behind the footer.
+  useEffect(() => {
+    const el = footerRef.current;
+    if (!el) return;
+
+    const publishHeight = () => {
+      document.documentElement.style.setProperty('--footer-height', `${el.offsetHeight}px`);
+    };
+
+    publishHeight();
+    const observer = new ResizeObserver(publishHeight);
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <Box
       component="footer"
+      ref={footerRef}
       sx={{
+        position: 'fixed',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 10,
         borderTop: '1px solid',
         borderColor: 'divider',
-        position: 'sticky',
-        bottom: 0,
         backgroundColor: 'background.paper',
         color: 'text.primary',
-        zIndex: 10,
         padding: '8px 0',
       }}
     >

@@ -1,6 +1,7 @@
 "use client";
 
 import { Box } from '@mui/material';
+import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
 type AdsenseBannerProps = {
@@ -18,18 +19,21 @@ const isValidClient = (v?: string) => !!v && /^ca-pub-\d+$/i.test(v);
 const isValidSlot = (v?: string) => !!v && /^\d+$/.test(v);
 
 export function AdsenseBanner({ client, slot, mock, style }: AdsenseBannerProps) {
-    const pushed = useRef(false);
+    const pathname = usePathname();
+    const lastPath = useRef<string | null>(null);
 
+    // Re-request an ad on each genuine route change (SPA navigation = new page view).
     useEffect(() => {
-        if (mock || pushed.current || !isValidClient(client) || !isValidSlot(slot)) return;
+        if (mock || !isValidClient(client) || !isValidSlot(slot)) return;
+        if (lastPath.current === pathname) return;
         try {
             const w = window as unknown as { adsbygoogle?: unknown[] };
             (w.adsbygoogle = w.adsbygoogle || []).push({});
-            pushed.current = true;
+            lastPath.current = pathname;
         } catch {
             // adsbygoogle loader not ready yet; nothing to do
         }
-    }, [client, slot, mock]);
+    }, [pathname, client, slot, mock]);
 
     if (mock) {
         return (
@@ -60,6 +64,7 @@ export function AdsenseBanner({ client, slot, mock, style }: AdsenseBannerProps)
 
     return (
         <ins
+            key={pathname}
             className="adsbygoogle"
             style={{ display: 'block', width: '100%', ...style }}
             data-ad-client={client}

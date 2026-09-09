@@ -12,7 +12,10 @@ export function Layout({ children }: LayoutProps) {
     <div className="flex min-h-screen flex-col">
       <UserProfileTabSync />
       <Header adsenseClient={ADSENSE_CLIENT_ID} adsenseSlot={ADSENSE_HEADER_SLOT} adsenseMock={adsenseMock} />
-      <main className="mx-auto w-full max-w-screen-xl flex-1 px-3 py-4 md:px-6 md:py-6">
+      <main
+        className="mx-auto w-full max-w-screen-xl flex-1 px-3 py-4 md:px-6 md:py-6"
+        style={{ paddingBottom: 'calc(var(--footer-height, 64px) + 1rem)' }}
+      >
         {children}
       </main>
       <Footer />
