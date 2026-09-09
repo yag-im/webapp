@@ -2,6 +2,7 @@
 
 import AccountSwitch from '@/account/switch';
 import { APP_TITLE } from '@/common/common-utils';
+import { AdsenseBanner } from '@/components/adsense-banner';
 import { MyStuffHeaderLink } from '@/my-stuff/my-stuff-header-link';
 import { NextLink } from '@/routing/next-link';
 import { Box, Divider, Grid, Typography } from '@mui/material';
@@ -33,7 +34,13 @@ const LogoImage = ({ src, alt, scale = 1, style, ...rest }: LogoImageProps) => {
   return <Image src={src as any} alt={alt ?? ''} height={52} style={combinedStyle} {...rest} />;
 }
 
-export function Header() {
+type HeaderProps = {
+  adsenseClient?: string;
+  adsenseSlot?: string;
+  adsenseMock?: boolean;
+};
+
+export function Header({ adsenseClient, adsenseSlot, adsenseMock }: HeaderProps) {
   const [hintPos, setHintPos] = useState<{ x: number; y: number } | null>(null);
   const [showHint, setShowHint] = useState(false);
 
@@ -48,8 +55,8 @@ export function Header() {
   return (
     <header>
       <Box sx={{ backgroundColor: 'background.paper', color: 'text.primary' }}>
-        <Grid container display="flex" alignItems="center" justifyContent="space-around" py={1.5}>
-          <Grid item display="flex" alignItems="center" justifyContent="flex-start" xs={8} pl={2}>
+        <Grid container display="flex" alignItems="center" sx={{ flexWrap: { xs: 'wrap', lg: 'nowrap' }, rowGap: 1 }}>
+          <Grid item display="flex" alignItems="center" justifyContent="flex-start" pl={2} py={1.5} sx={{ flexShrink: 0, order: 1 }}>
             <NextLink href="/">
               <LogoImage src={Logo} alt="YAG.IM Logo" />
             </NextLink>
@@ -72,7 +79,24 @@ export function Header() {
               </NextLink>
             </Box>
           </Grid>
-          <Grid item display="flex" justifyContent="flex-end" alignItems="center" pr={2} xs={4}>
+          <Grid
+            item
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            sx={{
+              order: { xs: 3, lg: 2 },
+              flexBasis: { xs: '100%', lg: 'auto' },
+              flexGrow: { lg: 1 },
+              minWidth: 0,
+              mx: { lg: 2 },
+            }}
+          >
+            <Box sx={{ width: '100%', maxWidth: { xs: '100%', lg: 728 } }}>
+              <AdsenseBanner client={adsenseClient} slot={adsenseSlot} mock={adsenseMock} />
+            </Box>
+          </Grid>
+          <Grid item display="flex" justifyContent="flex-end" alignItems="center" pr={2} py={1.5} sx={{ flexShrink: 0, order: { xs: 2, lg: 3 }, ml: { xs: 'auto', lg: 0 } }}>
             <MyStuffHeaderLink />
             <Box
               sx={{
