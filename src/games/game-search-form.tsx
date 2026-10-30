@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useRef } from 'react';
 import { OrderBy } from './types';
 
-const MIN_CHARS_SEARCH = 2
+const MIN_CHARS_SEARCH = 3
 const SEARCH_TRACK_DEBOUNCE_MS = 800
 
 export function GameSearchForm() {
@@ -20,23 +20,29 @@ export function GameSearchForm() {
   const searchTrackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleSearchChange = (event: { target: { value: string; }; }) => {
-    const keyword = event.target.value;
-    if (keyword.length >= MIN_CHARS_SEARCH || keyword.length === 0) {
-      if (keyword.length >= MIN_CHARS_SEARCH) {
-        if (searchTrackTimer.current) clearTimeout(searchTrackTimer.current);
-        searchTrackTimer.current = setTimeout(() => analytics.search(keyword), SEARCH_TRACK_DEBOUNCE_MS);
-      }
-      const params = typeof window !== 'undefined'
-        ? new URLSearchParams(window.location.search)
-        : new URLSearchParams(Array.from(searchParams.entries()));
+    const keyword = event.target.value.trim();
+    const isSearch = keyword.length >= MIN_CHARS_SEARCH;
+    const params = typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search)
+      : new URLSearchParams(Array.from(searchParams.entries()));
+
+    if (searchTrackTimer.current) clearTimeout(searchTrackTimer.current);
+
+    if (isSearch) {
+      searchTrackTimer.current = setTimeout(() => analytics.search(keyword), SEARCH_TRACK_DEBOUNCE_MS);
       params.set('keyword', keyword);
-      // ensure publisher and lang (if present) are preserved
-      const pub = searchParams.get('publisher');
-      if (pub) params.set('publisher', pub);
-      const lang = searchParams.get('lang');
-      if (lang) params.set('lang', lang);
-      router.push(createUrl('/games', params));
+    } else {
+      // Too short to search: leave the page untouched unless a search is active, then reset to the full catalog
+      if (!params.get('keyword')) return;
+      params.delete('keyword');
     }
+
+    // ensure publisher and lang (if present) are preserved
+    const pub = searchParams.get('publisher');
+    if (pub) params.set('publisher', pub);
+    const lang = searchParams.get('lang');
+    if (lang) params.set('lang', lang);
+    router.push(createUrl('/games', params));
   };
 
   const handleSortByChange = (event: { target: { value: string; }; }) => {
