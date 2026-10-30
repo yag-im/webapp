@@ -138,7 +138,7 @@ export const analytics = {
         trackEvent('screenshot_view', p);
     },
 
-    safariWarningShown(p: { item_id: string; ua?: string }) {
+    safariWarningShown(p: { item_id: string; platform?: string; ua?: string }) {
         trackEvent('safari_warning_shown', p);
     },
 

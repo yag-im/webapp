@@ -5,25 +5,33 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import type { WebKitPlatform } from './game-player-helpers';
 import * as React from 'react';
 
 export interface SafariWarningDialogProps {
     onExit: () => void;
     disablePortal: boolean; // when false, dialog is not visible in the fullscreen mode
     itemId?: string;
+    platform: WebKitPlatform;
 }
+
+const WARNING_TEXT: Record<WebKitPlatform, string> = {
+    safari: 'Safari browser detected. This game may not work properly due to compatibility issues. Please switch to another browser, such as Google Chrome, for the best experience.',
+    ios: 'This game may not work properly on iPhone or iPad due to browser compatibility issues. All browsers on iOS and iPadOS share the same limitations, so switching browsers will not help. Please use a desktop computer (Windows, macOS or Linux) with Google Chrome for the best experience.',
+};
 
 export default function SafariWarningDialog(props: SafariWarningDialogProps) {
     const [open, setOpen] = React.useState(true);
 
-    const { onExit, disablePortal = false, itemId = '' } = props;
+    const { onExit, disablePortal = false, itemId = '', platform } = props;
 
     React.useEffect(() => {
         analytics.safariWarningShown({
             item_id: itemId,
+            platform,
             ua: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
         });
-    }, [itemId]);
+    }, [itemId, platform]);
 
     const handleExitGame = () => {
         analytics.safariWarningDismissed({ item_id: itemId });
@@ -43,7 +51,7 @@ export default function SafariWarningDialog(props: SafariWarningDialogProps) {
             </DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                    Safari browser detected. This game may not work properly due to compatibility issues. Please switch to another browser, such as Google Chrome, for the best experience.
+                    {WARNING_TEXT[platform]}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

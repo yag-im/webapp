@@ -110,6 +110,21 @@ export function exitPointerLock() {
     document.exitPointerLock();
 }
 
+export type WebKitPlatform = 'ios' | 'safari';
+
+// All iOS/iPadOS browsers (Chrome, Firefox, Edge, ...) are WebKit under the hood, so they share
+// Safari's limitations. Returns null for non-WebKit browsers.
+export function detectWebKitPlatform(): WebKitPlatform | null {
+    if (typeof navigator === 'undefined') return null;
+    const ua = navigator.userAgent;
+    // iPadOS 13+ defaults to a desktop (Macintosh) UA; distinguish it from a Mac by touch support
+    const isIOS = /ipad|iphone|ipod/i.test(ua)
+        || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+    if (isIOS) return 'ios';
+    if (/^((?!chrome|chromium|android).)*safari/i.test(ua)) return 'safari';
+    return null;
+}
+
 export function isFullScreen() {
     return Boolean(
         document.fullscreenElement ||
