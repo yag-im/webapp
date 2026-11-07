@@ -6,7 +6,7 @@ import { sendGAEvent } from '@next/third-parties/google';
 // GA_ID is provided at runtime (dev: .devcontainer/.env, prod: k8s ConfigMap) and is
 // not inlined into the client bundle, so we gate on the runtime signal that the
 // server-rendered <GoogleAnalytics> has initialized gtag's dataLayer on the client.
-function gaReady(): boolean {
+export function gaReady(): boolean {
     return typeof window !== 'undefined'
         && Array.isArray((window as unknown as { dataLayer?: unknown[] }).dataLayer);
 }
@@ -28,6 +28,16 @@ export function trackEvent(name: string, params?: EventParams): void {
     try {
         // sendGAEvent(...args) => dataLayer.push(arguments)
         sendGAEvent('event', name, clean(params));
+    } catch {
+        // analytics must never break UX
+    }
+}
+
+// Pushed before subsequent events so they carry these as GA4 user properties (values ≤ 36 chars).
+function setUserProperties(props: EventParams): void {
+    if (!gaReady()) return;
+    try {
+        sendGAEvent('set', 'user_properties', clean(props));
     } catch {
         // analytics must never break UX
     }
@@ -160,5 +170,19 @@ export const analytics = {
 
     gamepadConnected(p: { id: string; mapping: string }) {
         trackEvent('gamepad_connected', p);
+    },
+
+    deviceInfo(p: {
+        gpu_vendor: string;
+        gpu_renderer: string;
+        gpu_type: string;
+        webgpu_low_power?: string;
+        webgpu_high_performance?: string;
+        gpu_hybrid?: boolean;
+        // Makes the hit show up in GA4 Admin → DebugView; used by the dev debug page.
+        debug_mode?: boolean;
+    }) {
+        setUserProperties({ gpu_vendor: p.gpu_vendor, gpu_type: p.gpu_type });
+        trackEvent('device_info', p);
     },
 };

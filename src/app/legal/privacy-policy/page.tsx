@@ -9,7 +9,7 @@ const PrivacyPolicy = () => {
         </Typography>
 
         <Typography variant="h6" gutterBottom>
-          Effective Date: June 12, 2024
+          Effective Date: November 7, 2026
         </Typography>
 
         <Typography variant="h6" gutterBottom>
@@ -42,6 +42,12 @@ const PrivacyPolicy = () => {
           When you visit our Website, certain information may be automatically collected, such as your
           IP address, browser type, and operating system. We use this data to improve our Website&apos;s
           performance and user experience.
+        </Typography>
+        <Typography paragraph>
+          We also collect basic information about your device&apos;s graphics hardware, such as the
+          GPU vendor, model, and whether it is integrated or dedicated, as reported by your browser.
+          This information is sent to Google Analytics and used only in aggregate to understand
+          compatibility and streaming performance across different devices.
         </Typography>
 
         <Typography variant="subtitle1" gutterBottom>
